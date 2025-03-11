@@ -29,6 +29,7 @@ credentials = service_account.Credentials.from_service_account_info(
 
 url = "https://docs.google.com/spreadsheets/d/1ZJICABhy361FCbYYxWmPbpKMI7nI_Bs7DRn4Le83TwY/edit?usp=sharing" # responses
 dataset_url = "https://docs.google.com/spreadsheets/d/1KBhebUEIc3Y6kaTH6cUzYaDrFslxDt9bLU35UUTDD6A/edit?usp=sharing"
+demographics_url = "https://docs.google.com/spreadsheets/d/1iDwU43J-8OPCnfg9D8l2fOu36OwGlG3eitqHQ1iX_iM/edit?usp=sharing"
 
 client=gspread.authorize(credentials)
 
@@ -48,6 +49,9 @@ def annotate_response(labels, sheet):
     state.r = random.randint(1, 2)
     if state.current_response_row<len(state.responses):
         state.current_response = state.responses.iloc[[state.current_response_row]]
+
+def bold_substring(text, substring):
+    return text.replace(substring, f"<b>{substring}</b>")
 
 
 ### Defining state:
@@ -73,7 +77,7 @@ if 'responses' not in state:
     responses_to_annotate = conn.read(
         spreadsheet=dataset_url,
         worksheet="Sheet1",
-        ttl="0")[['id', 'text']].dropna()
+        ttl="0")[['id', 'text', 'h_text']].dropna()
     state.response_ratings = {}
     state.responses = responses_to_annotate.sample(10)
     state.test_rows = state.responses.head(2)
@@ -83,18 +87,43 @@ if 'responses' not in state:
     state.run = 0
     state.r = random.randint(1, 2)
 
+if 'INSTRUCTIONS' not in state:
+    state.INSTRUCTIONS = 0
+
 
 ########### DEMOGRAPHICS FORM ##############
 placeholder = st.empty()
 if not state.INSTRUCTIONS_READ:
 
+    if state.INSTRUCTIONS == 0:
         st.write('''
-            # Annotation Guidelines for Relationship Dimensions
+                # Annotation Guidelines for Social Dimensions
+                    
+                **Social Dimensions** are the types of relationships or interactions that people have with each other. These dimensions can be used to describe the nature of interactions between people in a text.
+                Experts have identified ten social dimensions:
+                    
+                1. **Knowledge**: Exchange of ideas or information; learning, teaching.
+                2. **Power**: Having power over the behavior and outcomes of another.
+                3. **Status**: Conferring status, appreciation, gratitude, or admiration upon another.
+                4. **Trust**: Will of relying on the actions or judgments of another.
+                5. **Support**: Giving emotional or practical aid and companionship.
+                6. **Romance**: Intimacy among people with a sentimental or sexual relationship.
+                7. **Similarity**: Shared interests, motivations or outlooks.
+                8. **Identity**: Shared sense of belonging to the same community or group.
+                9. **Fun**: Experiencing leisure, laughter, and joy.
+                10. **Conflict**: Contrast or diverging views.
+                    
+                In this task, we want to understand which of these relationships are evident in a piece of text.
+                Each annotation should categorize interactions or relationships into one or more of the following dimensions. Annotators should consider the context, intent, and content of the text when assigning labels. If an interaction fits multiple dimensions, multiple labels may be applied.
 
-            Each annotation should categorize interactions or relationships into one or more of the following dimensions. Annotators should consider the context, intent, and content of the text when assigning labels. If an interaction fits multiple dimensions, multiple labels may be applied.
+                Let's look at each one more carefully.
+                    ''')
+        st.button("Click here to continue.", on_click=lambda: state.update(INSTRUCTIONS=1))
 
-            ---
-
+    if state.INSTRUCTIONS == 1:
+        st.write('''
+            # Annotation Guidelines for Social Dimensions
+            
             ## 1. Knowledge  
             **Definition:** Exchange of ideas or information; learning, teaching.  
 
@@ -107,9 +136,7 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"Did you know that the Eiffel Tower expands in the summer due to heat?"*  
             *"Let me explain how this formula works in physics."*  
-
-            ---
-
+              
             ## 2. Power  
             **Definition:** Having power over the behavior and outcomes of another.  
 
@@ -138,8 +165,12 @@ if not state.INSTRUCTIONS_READ:
             *"You did an amazing job on this project!"*  
             *"He’s one of the most respected scientists in the field."*  
 
-            ---
+                 ''')
+        st.button("Next", on_click=lambda: state.update(INSTRUCTIONS=2))
 
+    if state.INSTRUCTIONS == 2:
+        st.write('''
+            # Annotation Guidelines for Social Dimensions
             ## 4. Trust  
             **Definition:** Willingness to rely on the actions or judgments of another.  
 
@@ -179,9 +210,14 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"I love you so much; you mean the world to me."*  
             *"Would you like to go on a date with me this weekend?"*  
+ 
 
-            ---
+                 ''')
+        st.button("More", on_click=lambda: state.update(INSTRUCTIONS=3))
 
+    if state.INSTRUCTIONS == 3:
+        st.write('''
+            # Annotation Guidelines for Social Dimensions
             ## 7. Similarity  
             **Definition:** Shared interests, motivations, or outlooks.  
 
@@ -235,21 +271,25 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"I completely disagree with your stance on this issue."*  
             *"You always interrupt me when I try to explain my side!"*  
+ 
 
-            ---
+                 ''')
+        st.button("And finally...", on_click=lambda: state.update(INSTRUCTIONS=4))
 
+    if state.INSTRUCTIONS == 4:
+        st.write('''
+            # Annotation Guidelines for Social Dimensions
+            
             ## General Annotation Rules  
             - **Consider Context:** Some statements may seem neutral but imply deeper relational dimensions.  
             - **Apply Multiple Labels When Necessary:** If an interaction contains elements of multiple dimensions, assign all relevant labels.  
             - **Avoid Overgeneralization:** Focus on the specific intent and effect of the statement rather than assuming based on general tone.  
             - **Disregard Sarcasm Unless Clear:** If sarcasm is ambiguous, label based on literal meaning.  
 
-            ---
-
-
-        ''')
-        
+                 ''')
         st.button("I have read the instructions", on_click=lambda: state.update(INSTRUCTIONS_READ=True))
+        
+    
 
 #if not state.form_filled:
 if state.INSTRUCTIONS_READ:
@@ -259,7 +299,7 @@ if state.INSTRUCTIONS_READ:
 
             st.subheader("Tell us a bit about you")
 
-            st.write('We are conducting research about the ways in which people of all backgrounds are using AI. To understand if there are differences in the ways different people are using AI chatbots and other technologies, we are running a survey. ')
+            st.write('We want to know a bit about you to understand how different people interpret the text. ')
             st.write('Any data published will be fully anonymised. ')
             st.write('USE TAB TO GO TO THE NEXT SECTION. DO NOT PRESS ENTER TO MOVE TO THE NEXT SECTION OR THE FORM WILL SUBMIT!!!')
 
@@ -286,9 +326,43 @@ if state.INSTRUCTIONS_READ:
     
             
             st.markdown('***')
+            st.subheader("Personality Traits")
+            st.write('The task is subjective. The following questions help us understand how personality traits might affect your interpretation of the utterances.')
+            options = ['Strongly disagree', "Disagree", "Neutral", "Agree", "Strongly agree"]
+            big_1 = st.select_slider('I see myself as someone who is reserved.', options = options, value = "Neutral")
+            big_2 = st.select_slider('I see myself as someone who is generally trusting.', options = options, value = "Neutral")
+            big_3 = st.select_slider('I see myself as someone who tends to be lazy.', options = options, value = "Neutral")
+            big_4 = st.select_slider('I see myself as someone who is relaxed, handles stress well.', options = options, value = "Neutral")
+            big_5 = st.select_slider('I see myself as someone who has few artistic interests.', options = options, value = "Neutral")
+            big_6 = st.select_slider('I see myself as someone who is outgoing, sociable.', options = options, value = "Neutral")
+            big_7 = st.select_slider('I see myself as someone who tends to find fault with others.', options = options, value = "Neutral")
+            big_8 = st.select_slider('I see myself as someone who does a thorough job.', options = options, value = "Neutral")
+            big_9 = st.select_slider('I see myself as someone who gets nervous easily.', options = options, value = "Neutral")
+            big_10 = st.select_slider('I see myself as someone who has an active imagination.', options = options, value = "Neutral")
 
 
-
+            st.markdown("""
+                <style>
+                .stSlider [data-baseweb=slider]{
+                    width: 30%;
+                }
+                div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+                    font-size: 20px;
+                }
+                div[class*="stSelectbox"] > label > div[data-testid="stMarkdownContainer"] > p {
+                    font-size: 20px;
+                }
+                div[class*="stTextInput"] > label > div[data-testid="stMarkdownContainer"] > p {
+                    font-size: 20px;
+                }
+                div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
+                    font-size: 20px;
+                }
+                div[class*="stMultiSelect"] > label > div[data-testid="stMarkdownContainer"] > p {
+                    font-size: 20px;
+                }
+                """,unsafe_allow_html=True)
+            
             # Every form must have a submit button.
             submitted = st.form_submit_button("Submit")#, on_click=populate_annotations)
             if submitted:
@@ -298,11 +372,14 @@ if state.INSTRUCTIONS_READ:
 
 
                 demographic_information = [
-                    gender, gender_other, age, ';'.join(nationality), ';'.join(ethnicity), ethn_free,
+                    gender, gender_other, age, ';'.join(nationality), ';'.join(ethnicity), ethn_free, ';'.join(language),  religion,  education
                 ]
 
-                row = [annotator_id, session_id] + demographic_information 
-                write_to_file(row, url)
+                big5 = [big_1, big_2, big_3, big_4, big_5, big_6, big_7, big_8, big_9, big_10]
+
+
+                row = [annotator_id, session_id] + demographic_information + big5
+                write_to_file(row, demographics_url)
             
                 state.form_filled = True
 
@@ -314,23 +391,53 @@ if state.form_filled:
         
     annotation = st.container(border=True)
     annotation.subheader("Utterance {} of {} ".format(state.current_response_row+1, len(state.responses)))
-    annotation.write(state.responses.iloc[state.current_response_row]['text'])
+    annotation.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
+    text = bold_substring(state.responses.iloc[state.current_response_row]['text'], state.responses.iloc[state.current_response_row]['h_text'])
+    #annotation.write(state.responses.iloc[state.current_response_row]['text'])
+    #annotation.markdown(text)
 
-    knowledge = annotation.checkbox('*Knowledge*: Exchange of ideas or information; learning, teaching', key='know_'+str(state.run))  
-    power = annotation.checkbox('*Power*: Having power over the behavior and outcomes of another', key='pow_'+str(state.run))  
-    status = annotation.checkbox('*Status*: Conferring status, appreciation, gratitude, or admiration upon another', key='stat_'+str(state.run))  
-    trust = annotation.checkbox('*Trust*: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
-    support = annotation.checkbox('*Support*: Giving emotional or practical aid and companionship', key='supp_'+str(state.run))  
-    romance = annotation.checkbox('*Romance*: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
-    similarity = annotation.checkbox('*Similarity*: Shared interests, motivations or outlooks', key='sim_'+str(state.run))  
-    identity = annotation.checkbox('*Identity*: Shared sense of belonging to the same community or group', key='id_'+str(state.run))  
-    fun = annotation.checkbox('*Fun*: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))  
-    conflict = annotation.checkbox('*Conflict*: Contrast or diverging views', key='con_'+str(state.run)) 
+    annotation.markdown(
+        """
+        <style>
+            .highlight {
+                background-color: whitesmoke;
+                padding: 10px;
+                border-radius: 5px;
+                display: block;
+                margin: 20px;
+                font-size: 18px;
+            }
+        </style>
+        <div class="highlight">
+            """ + text + """
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    annotation.write("Which of the following social dimensions apply to the section in **bold**?")
+    
+    romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
+    fun = annotation.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))
+
+    trust = annotation.checkbox('**Trust**: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
+    support = annotation.checkbox('**Support**: Giving emotional or practical aid and companionship', key='supp_'+str(state.run))  
+    similarity = annotation.checkbox('**Similarity**: Shared interests, motivations or outlooks', key='sim_'+str(state.run))  
+    identity = annotation.checkbox('**Identity**: Shared sense of belonging to the same community or group', key='id_'+str(state.run))  
+    
+    status = annotation.checkbox('**Status**: Conferring status, appreciation, gratitude, or admiration upon another', key='stat_'+str(state.run))  
+
+    knowledge = annotation.checkbox('**Knowledge**: Exchange of ideas or information; learning, teaching', key='know_'+str(state.run))  
+    power = annotation.checkbox('**Power**: Having power over the behavior and outcomes of another', key='pow_'+str(state.run))  
+
+    conflict = annotation.checkbox('**Conflict**: Contrast or diverging views', key='con_'+str(state.run)) 
+
     other = annotation.checkbox('Other', key='oth_'+str(state.run))
+    other_sp = annotation.text_input('If you selected other, please specify:', key = 'other_'+str(state.run))
     none = annotation.checkbox('None of the above', key='none_'+str(state.run))
 
         
-    dimensions = [knowledge, power, status, trust, support, romance, similarity, identity, fun, conflict, other, none]
+    dimensions = [knowledge, power, status, trust, support, romance, similarity, identity, fun, conflict, other, other_sp, none]
 
 
     if any(dimensions):
