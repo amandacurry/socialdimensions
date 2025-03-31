@@ -117,7 +117,7 @@ if not state.INSTRUCTIONS_READ:
                 9. **Fun**: Experiencing leisure, laughter, and joy.
                 10. **Conflict**: Contrast or diverging views.
                     
-                In this task, we want to understand which of these relationships are evident in a piece of text.
+                In this task, we want to understand which of these relationships are evident in a piece of text, with the exception of **Romance**.
                 Each annotation should categorize interactions or relationships into one or more of the following dimensions. Annotators should consider the context, intent, and content of the text when assigning labels. If an interaction fits multiple dimensions, multiple labels may be applied.
 
                 Let's look at each one more carefully.
@@ -414,7 +414,7 @@ if state.form_filled:
 
     annotation.write("Which of the following social dimensions apply to the section in **bold**?")
     
-    romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
+    #romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
     fun = annotation.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))
 
     trust = annotation.checkbox('**Trust**: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
@@ -441,6 +441,8 @@ if state.form_filled:
         annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
 
 if state.current_response_row == len(state.responses)-1:
+    annotation.empty()
+    st.subheader("Thank you!")
     annotation.write("This is the last utterance. Thank you for participating! The completion code is: C18E9D69")
 
 
