@@ -138,8 +138,8 @@ if not state.INSTRUCTIONS_READ:
             - Providing references or sources to support learning.  
 
             **Examples:**  
-            *"Did you know that the Eiffel Tower expands in the summer due to heat?"*  
-            *"Let me explain how this formula works in physics."*  
+            *"But if you're generally curious, I'm happy to explain a few of the things that aren't entirely accurate."*  
+            *"I'd recommend the first few times you do it using canned beer instead of bottled beer."*  
               
             ## 2. Power  
             **Definition:** Having power over the behavior and outcomes of another.  
@@ -152,7 +152,7 @@ if not state.INSTRUCTIONS_READ:
 
             **Examples:**  
             *"You must submit your report by noon, or there will be consequences."*  
-            *"As your boss, I expect you to follow my instructions without question."*  
+            *"Your job is to take objectives But we can't actually **do** that right now."*  
 
             ---
 
@@ -167,7 +167,7 @@ if not state.INSTRUCTIONS_READ:
 
             **Examples:**  
             *"You did an amazing job on this project!"*  
-            *"He’s one of the most respected scientists in the field."*  
+            *"Thank you for teaching me a new word this morning."*  
 
                  ''')
         st.button("Next", on_click=lambda: state.update(INSTRUCTIONS=2))
@@ -198,8 +198,8 @@ if not state.INSTRUCTIONS_READ:
             - Providing assistance or resources for well-being.  
 
             **Examples:**  
-            *"I'm here for you if you need anything."*  
-            *"Let me know how I can help you through this."*  
+            *"This is not the advice you've come for, but I think you need some *you* time."*  
+            *"Your family has my condolences, for what little it's worth."*  
 
             ---
 
@@ -235,7 +235,7 @@ if not state.INSTRUCTIONS_READ:
 
             **Examples:**  
             *"As fellow artists, we understand the struggle of finding inspiration."*  
-            *"We, as a nation, need to work together."*  
+            *"But what really set us apart and made our community unique was your contribution."*  
 
             ---
 
@@ -248,8 +248,8 @@ if not state.INSTRUCTIONS_READ:
             - Lighthearted and enjoyable interactions.  
 
             **Examples:**  
-            *"That was the funniest movie I’ve ever seen!"*  
-            *"Let’s go on a road trip this weekend for some adventure!"*  
+            *"Hahaha that's hilarious, and i feel you."*  
+            *"Haha, you gave me and my girlfriend a good laugh at that haha."*  
 
             ---
 
@@ -262,8 +262,8 @@ if not state.INSTRUCTIONS_READ:
             - Differences in opinions leading to tension.  
 
             **Examples:**  
-            *"I completely disagree with your stance on this issue."*  
-            *"You always interrupt me when I try to explain my side!"*  
+            *"He's not some wildly popular player and your ignorance is showing."*  
+            *"Because you're telling me that you literally don't care that you believe false things."*  
  
 
                  ''')
