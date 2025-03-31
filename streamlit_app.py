@@ -83,8 +83,8 @@ if 'responses' not in state:
         worksheet="test_questions",
         ttl="0")[['id', 'text', 'h_text']].dropna()
     state.response_ratings = {}
-    state.responses = responses_to_annotate.sample(10)
-    state.test_rows = test_questions.sample(3)
+    state.responses = responses_to_annotate.sample(45)
+    state.test_rows = test_questions.sample(5)
     state.responses = pd.concat([state.responses, state.test_rows]).reset_index(drop=True)
     state.current_response_row = 0
     state.current_response = state.responses.iloc[[state.current_response_row]]
@@ -203,17 +203,6 @@ if not state.INSTRUCTIONS_READ:
 
             ---
 
-            ## 6. Romance  
-            **Definition:** Intimacy among people with a sentimental or sexual relationship.  
-
-            **Indicators:**  
-            - Expressions of love, affection, or romantic interest.  
-            - Discussion of romantic or sexual relationships.  
-            - Terms of endearment or flirtation.  
-
-            **Examples:**  
-            *"I love you so much; you mean the world to me."*  
-            *"Would you like to go on a date with me this weekend?"*  
  
 
                  ''')
@@ -222,7 +211,7 @@ if not state.INSTRUCTIONS_READ:
     if state.INSTRUCTIONS == 3:
         st.write('''
             # Annotation Guidelines for Social Dimensions
-            ## 7. Similarity  
+            ## 6. Similarity  
             **Definition:** Shared interests, motivations, or outlooks.  
 
             **Indicators:**  
@@ -236,7 +225,7 @@ if not state.INSTRUCTIONS_READ:
 
             ---
 
-            ## 8. Identity  
+            ## 7. Identity  
             **Definition:** Shared sense of belonging to the same community or group.  
 
             **Indicators:**  
@@ -250,7 +239,7 @@ if not state.INSTRUCTIONS_READ:
 
             ---
 
-            ## 9. Fun  
+            ## 8. Fun  
             **Definition:** Experiencing leisure, laughter, and joy.  
 
             **Indicators:**  
@@ -264,7 +253,7 @@ if not state.INSTRUCTIONS_READ:
 
             ---
 
-            ## 10. Conflict  
+            ## 9. Conflict  
             **Definition:** Contrast or diverging views.  
 
             **Indicators:**  
@@ -452,7 +441,7 @@ if state.form_filled:
         annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
 
 if state.current_response_row == len(state.responses)-1:
-    annotation.write("This is the last utterance. Thank you for participating! The completion code is: ")
+    annotation.write("This is the last utterance. Thank you for participating! The completion code is: C18E9D69")
 
 
 
