@@ -434,7 +434,7 @@ if state.form_filled:
     none = annotation.checkbox('None of the above', key='none_'+str(state.run))
 
         
-    dimensions = [knowledge, power, status, trust, support, romance, similarity, identity, fun, conflict, other, other_sp, none]
+    dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
 
 
     if any(dimensions):
