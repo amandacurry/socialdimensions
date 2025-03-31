@@ -47,7 +47,7 @@ def annotate_response(labels, sheet):
     state.current_response_row+=1
     state.run+=1
     state.r = random.randint(1, 2)
-    if state.current_response_row<len(state.responses):
+    if state.current_response_row<len(state.responses)-1:
         state.current_response = state.responses.iloc[[state.current_response_row]]
 
 def bold_substring(text, substring):
@@ -286,164 +286,164 @@ if not state.INSTRUCTIONS_READ:
 
 #if not state.form_filled:
 if state.INSTRUCTIONS_READ:
-    with placeholder.container():
+    if not state.form_filled:
+        with placeholder.container():
 
-        with st.form("demographics"):
+            with st.form("demographics"):
 
-            st.subheader("Tell us a bit about you")
+                st.subheader("Tell us a bit about you")
 
-            st.write('We want to know a bit about you to understand how different people interpret the text. ')
-            st.write('Any data published will be fully anonymised. ')
-            st.write('USE TAB TO GO TO THE NEXT SECTION. DO NOT PRESS ENTER TO MOVE TO THE NEXT SECTION OR THE FORM WILL SUBMIT!!!')
+                st.write('We want to know a bit about you to understand how different people interpret the text. ')
+                st.write('Any data published will be fully anonymised. ')
+                st.write('USE TAB TO GO TO THE NEXT SECTION. DO NOT PRESS ENTER TO MOVE TO THE NEXT SECTION OR THE FORM WILL SUBMIT!!!')
 
-            placeholder_s = "Select all that apply."
+                placeholder_s = "Select all that apply."
 
-            gender = st.selectbox("Gender*", ("Male", "Female", "Non-binary", "Other, please specify.", "Prefer not to say"), index=None)
+                gender = st.selectbox("Gender*", ("Male", "Female", "Non-binary", "Other, please specify.", "Prefer not to say"), index=None)
 
-            gender_other = st.text_input('If you selected other, please specify:', key = 'gender')
-            
-            age = st.radio('Age*', ['18-24', '25-34' , '35-44', '45-54', '55-60', '60+'], None, key='_age', horizontal=True)
-
-            nationality = st.multiselect('Nationality (You may select multiple):*', options = countries, placeholder=placeholder_s)
-    
-            ethnicity = st.multiselect('What is your ethnicity? You may select more than one.*', options = ['American Indian or Alaskan Native', 'Asian / Pacific Islander', 'Black or African American', 'Hispanic', 'White / Caucasian', 'Other. Please specify', 'Prefer not to say'], placeholder=placeholder_s)
-            ethn_free = st.text_input('If you selected other, please specify:', key = 'ethnic')
-
-            language = st.multiselect('What is your first language? You may select more than one, if applicable.*', options = ['English', 'Spanish', 'German', 'Chinese', 'French', 'Arabic', 'Other (Please Specify)'], placeholder=placeholder_s)
-            language_free = st.text_input('If you selected other, please specify:', key = 'lang')
-
-            religion = st.selectbox('Do you have a religious affiliation? If so, which one?*', options = ['Christian', 'Muslim', 'Jewish',  'Buddhist', 'Other, please specify.', 'None', 'Prefer not to say'], index = None)
-            religion_other = st.text_input('If you selected other, please specify:', key = 'religion')
-
-            education = st.selectbox('Current education level* ', options = ['High school or below', 'Undergraduate degree', 'Graduate degree', 'Doctorate or above', 'Prefer not to say'], index=None)
-    
-            
-            st.markdown('***')
-            st.subheader("Personality Traits")
-            st.write('The task is subjective. The following questions help us understand how personality traits might affect your interpretation of the utterances.')
-            options = ['Strongly disagree', "Disagree", "Neutral", "Agree", "Strongly agree"]
-            big_1 = st.radio('I see myself as someone who is reserved.', options = options, index=None, horizontal=True)
-            big_2 = st.radio('I see myself as someone who is generally trusting.', options = options,  index=None, horizontal=True)
-            big_3 = st.radio('I see myself as someone who tends to be lazy.', options = options,  index=None, horizontal=True)
-            big_4 = st.radio('I see myself as someone who is relaxed, handles stress well.', options = options,  index=None, horizontal=True)
-            big_5 = st.radio('I see myself as someone who has few artistic interests.', options = options,  index=None, horizontal=True)
-            big_6 = st.radio('I see myself as someone who is outgoing, sociable.', options = options, index=None, horizontal=True)
-            big_7 = st.radio('I see myself as someone who tends to find fault with others.', options = options, index=None, horizontal=True)
-            big_8 = st.radio('I see myself as someone who does a thorough job.', options = options, index=None, horizontal=True)
-            big_9 = st.radio('I see myself as someone who gets nervous easily.', options = options, index=None, horizontal=True)
-            big_10 = st.radio('I see myself as someone who has an active imagination.', options = options,  index=None, horizontal=True)
-
-
-            st.markdown("""
-                <style>
-                .stSlider [data-baseweb=slider]{
-                    width: 30%;
-                }
-                div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
-                    font-size: 20px;
-                }
-                div[class*="stSelectbox"] > label > div[data-testid="stMarkdownContainer"] > p {
-                    font-size: 20px;
-                }
-                div[class*="stTextInput"] > label > div[data-testid="stMarkdownContainer"] > p {
-                    font-size: 20px;
-                }
-                div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
-                    font-size: 20px;
-                }
-                div[class*="stMultiSelect"] > label > div[data-testid="stMarkdownContainer"] > p {
-                    font-size: 20px;
-                }
-                """,unsafe_allow_html=True)
-            
-            # Every form must have a submit button.
-            submitted = st.form_submit_button("Submit")#, on_click=populate_annotations)
-            if submitted:
-                all_valid = True
-                required = [gender, age, nationality, language, ethnicity,  language,  religion,  education,]
-                #cond = [llm_use, usecases, contexts,  prompt1, prompt2, prompt3, prompt4, prompt5, prompt6, prompt7, prompt8, prompt9, prompt10]
-
-                if any(field is None or field == "" for field in required):
-                    st.warning("Please complete all required fields in the form.")
-                    all_valid = False
-
-                demographic_information = [
-                    gender, gender_other, age, ';'.join(nationality), ';'.join(ethnicity), ethn_free, ';'.join(language),  religion,  education
-                ]
-
-                big5 = [big_1, big_2, big_3, big_4, big_5, big_6, big_7, big_8, big_9, big_10]
-
-
-                row = [annotator_id, session_id] + demographic_information + big5
-                if all_valid:
-                    write_to_file(row, demographics_url)
+                gender_other = st.text_input('If you selected other, please specify:', key = 'gender')
                 
-                    state.form_filled = True
+                age = st.radio('Age*', ['18-24', '25-34' , '35-44', '45-54', '55-60', '60+'], None, key='_age', horizontal=True)
 
-
-
-
-if state.form_filled:
-    placeholder.empty()
+                nationality = st.multiselect('Nationality (You may select multiple):*', options = countries, placeholder=placeholder_s)
         
-    annotation = st.container(border=True)
-    annotation.subheader("Utterance {} of {} ".format(state.current_response_row+1, len(state.responses)))
-    annotation.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
-    text = bold_substring(state.responses.iloc[state.current_response_row]['text'], state.responses.iloc[state.current_response_row]['h_text'])
-    #annotation.write(state.responses.iloc[state.current_response_row]['text'])
-    #annotation.markdown(text)
+                ethnicity = st.multiselect('What is your ethnicity? You may select more than one.*', options = ['American Indian or Alaskan Native', 'Asian / Pacific Islander', 'Black or African American', 'Hispanic', 'White / Caucasian', 'Other. Please specify', 'Prefer not to say'], placeholder=placeholder_s)
+                ethn_free = st.text_input('If you selected other, please specify:', key = 'ethnic')
 
-    annotation.markdown(
-        """
-        <style>
-            .highlight {
-                background-color: whitesmoke;
-                padding: 10px;
-                border-radius: 5px;
-                display: block;
-                margin: 20px;
-                font-size: 18px;
-            }
-        </style>
-        <div class="highlight">
-            """ + text + """
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+                language = st.multiselect('What is your first language? You may select more than one, if applicable.*', options = ['English', 'Spanish', 'German', 'Chinese', 'French', 'Arabic', 'Other (Please Specify)'], placeholder=placeholder_s)
+                language_free = st.text_input('If you selected other, please specify:', key = 'lang')
 
-    annotation.write("Which of the following social dimensions apply to the section in **bold**?")
-    
-    #romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
-    fun = annotation.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))
+                religion = st.selectbox('Do you have a religious affiliation? If so, which one?*', options = ['Christian', 'Muslim', 'Jewish',  'Buddhist', 'Other, please specify.', 'None', 'Prefer not to say'], index = None)
+                religion_other = st.text_input('If you selected other, please specify:', key = 'religion')
 
-    trust = annotation.checkbox('**Trust**: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
-    support = annotation.checkbox('**Support**: Giving emotional or practical aid and companionship', key='supp_'+str(state.run))  
-    similarity = annotation.checkbox('**Similarity**: Shared interests, motivations or outlooks', key='sim_'+str(state.run))  
-    identity = annotation.checkbox('**Identity**: Shared sense of belonging to the same community or group', key='id_'+str(state.run))  
-    
-    status = annotation.checkbox('**Status**: Conferring status, appreciation, gratitude, or admiration upon another', key='stat_'+str(state.run))  
-
-    knowledge = annotation.checkbox('**Knowledge**: Exchange of ideas or information; learning, teaching', key='know_'+str(state.run))  
-    power = annotation.checkbox('**Power**: Having power over the behavior and outcomes of another', key='pow_'+str(state.run))  
-
-    conflict = annotation.checkbox('**Conflict**: Contrast or diverging views', key='con_'+str(state.run)) 
-
-    other = annotation.checkbox('Other', key='oth_'+str(state.run))
-    other_sp = annotation.text_input('If you selected other, please specify:', key = 'other_'+str(state.run))
-    none = annotation.checkbox('None of the above', key='none_'+str(state.run))
-
+                education = st.selectbox('Current education level* ', options = ['High school or below', 'Undergraduate degree', 'Graduate degree', 'Doctorate or above', 'Prefer not to say'], index=None)
         
-    dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
+                
+                st.markdown('***')
+                st.subheader("Personality Traits")
+                st.write('The task is subjective. The following questions help us understand how personality traits might affect your interpretation of the utterances.')
+                options = ['Strongly disagree', "Disagree", "Neutral", "Agree", "Strongly agree"]
+                big_1 = st.radio('I see myself as someone who is reserved.', options = options, index=None, horizontal=True)
+                big_2 = st.radio('I see myself as someone who is generally trusting.', options = options,  index=None, horizontal=True)
+                big_3 = st.radio('I see myself as someone who tends to be lazy.', options = options,  index=None, horizontal=True)
+                big_4 = st.radio('I see myself as someone who is relaxed, handles stress well.', options = options,  index=None, horizontal=True)
+                big_5 = st.radio('I see myself as someone who has few artistic interests.', options = options,  index=None, horizontal=True)
+                big_6 = st.radio('I see myself as someone who is outgoing, sociable.', options = options, index=None, horizontal=True)
+                big_7 = st.radio('I see myself as someone who tends to find fault with others.', options = options, index=None, horizontal=True)
+                big_8 = st.radio('I see myself as someone who does a thorough job.', options = options, index=None, horizontal=True)
+                big_9 = st.radio('I see myself as someone who gets nervous easily.', options = options, index=None, horizontal=True)
+                big_10 = st.radio('I see myself as someone who has an active imagination.', options = options,  index=None, horizontal=True)
 
 
-    if any(dimensions):
-        annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
+                st.markdown("""
+                    <style>
+                    .stSlider [data-baseweb=slider]{
+                        width: 30%;
+                    }
+                    div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+                        font-size: 20px;
+                    }
+                    div[class*="stSelectbox"] > label > div[data-testid="stMarkdownContainer"] > p {
+                        font-size: 20px;
+                    }
+                    div[class*="stTextInput"] > label > div[data-testid="stMarkdownContainer"] > p {
+                        font-size: 20px;
+                    }
+                    div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
+                        font-size: 20px;
+                    }
+                    div[class*="stMultiSelect"] > label > div[data-testid="stMarkdownContainer"] > p {
+                        font-size: 20px;
+                    }
+                    """,unsafe_allow_html=True)
+                
+                # Every form must have a submit button.
+                submitted = st.form_submit_button("Submit")#, on_click=populate_annotations)
+                if submitted:
+                    all_valid = True
+                    required = [gender, age, nationality, language, ethnicity,  language,  religion,  education,]
+                    #cond = [llm_use, usecases, contexts,  prompt1, prompt2, prompt3, prompt4, prompt5, prompt6, prompt7, prompt8, prompt9, prompt10]
 
-if state.current_response_row == len(state.responses):
-    annotation.empty()
+                    if any(field is None or field == "" for field in required):
+                        st.warning("Please complete all required fields in the form.")
+                        all_valid = False
+
+                    demographic_information = [
+                        gender, gender_other, age, ';'.join(nationality), ';'.join(ethnicity), ethn_free, ';'.join(language),  religion,  education
+                    ]
+
+                    big5 = [big_1, big_2, big_3, big_4, big_5, big_6, big_7, big_8, big_9, big_10]
+
+
+                    row = [annotator_id, session_id] + demographic_information + big5
+                    if all_valid:
+                        write_to_file(row, demographics_url)
+                    
+                        state.form_filled = True
+
+
+
+
+    if state.form_filled and state.current_response_row<len(state.responses):
+        placeholder.empty()
+            
+        annotation = st.container(border=True)
+        annotation.subheader("Utterance {} of {} ".format(state.current_response_row+1, len(state.responses)))
+        annotation.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
+        text = bold_substring(state.responses.iloc[state.current_response_row]['text'], state.responses.iloc[state.current_response_row]['h_text'])
+        #annotation.write(state.responses.iloc[state.current_response_row]['text'])
+        #annotation.markdown(text)
+
+        annotation.markdown(
+            """
+            <style>
+                .highlight {
+                    background-color: whitesmoke;
+                    padding: 10px;
+                    border-radius: 5px;
+                    display: block;
+                    margin: 20px;
+                    font-size: 18px;
+                }
+            </style>
+            <div class="highlight">
+                """ + text + """
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        annotation.write("Which of the following social dimensions apply to the section in **bold**?")
+        
+        #romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
+        fun = annotation.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))
+
+        trust = annotation.checkbox('**Trust**: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
+        support = annotation.checkbox('**Support**: Giving emotional or practical aid and companionship', key='supp_'+str(state.run))  
+        similarity = annotation.checkbox('**Similarity**: Shared interests, motivations or outlooks', key='sim_'+str(state.run))  
+        identity = annotation.checkbox('**Identity**: Shared sense of belonging to the same community or group', key='id_'+str(state.run))  
+        
+        status = annotation.checkbox('**Status**: Conferring status, appreciation, gratitude, or admiration upon another', key='stat_'+str(state.run))  
+
+        knowledge = annotation.checkbox('**Knowledge**: Exchange of ideas or information; learning, teaching', key='know_'+str(state.run))  
+        power = annotation.checkbox('**Power**: Having power over the behavior and outcomes of another', key='pow_'+str(state.run))  
+
+        conflict = annotation.checkbox('**Conflict**: Contrast or diverging views', key='con_'+str(state.run)) 
+
+        other = annotation.checkbox('Other', key='oth_'+str(state.run))
+        other_sp = annotation.text_input('If you selected other, please specify:', key = 'other_'+str(state.run))
+        none = annotation.checkbox('None of the above', key='none_'+str(state.run))
+
+            
+        dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
+
+
+        if any(dimensions):
+            annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
+
+if state.form_filled and state.current_response_row>=len(state.responses):
     st.subheader("Thank you!")
-    annotation.write("This is the last utterance. Thank you for participating! The completion code is: C18E9D69")
+    placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C18E9D69**")
 
 
 
