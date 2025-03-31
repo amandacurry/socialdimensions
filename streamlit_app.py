@@ -78,9 +78,13 @@ if 'responses' not in state:
         spreadsheet=dataset_url,
         worksheet="Sheet1",
         ttl="0")[['id', 'text', 'h_text']].dropna()
+    test_questions = conn.read(
+        spreadsheet=dataset_url,
+        worksheet="test_questions",
+        ttl="0")[['id', 'text', 'h_text']].dropna()
     state.response_ratings = {}
     state.responses = responses_to_annotate.sample(10)
-    state.test_rows = state.responses.head(2)
+    state.test_rows = test_questions.sample(3)
     state.responses = pd.concat([state.responses, state.test_rows]).reset_index(drop=True)
     state.current_response_row = 0
     state.current_response = state.responses.iloc[[state.current_response_row]]
@@ -329,16 +333,16 @@ if state.INSTRUCTIONS_READ:
             st.subheader("Personality Traits")
             st.write('The task is subjective. The following questions help us understand how personality traits might affect your interpretation of the utterances.')
             options = ['Strongly disagree', "Disagree", "Neutral", "Agree", "Strongly agree"]
-            big_1 = st.select_slider('I see myself as someone who is reserved.', options = options, value = "Neutral")
-            big_2 = st.select_slider('I see myself as someone who is generally trusting.', options = options, value = "Neutral")
-            big_3 = st.select_slider('I see myself as someone who tends to be lazy.', options = options, value = "Neutral")
-            big_4 = st.select_slider('I see myself as someone who is relaxed, handles stress well.', options = options, value = "Neutral")
-            big_5 = st.select_slider('I see myself as someone who has few artistic interests.', options = options, value = "Neutral")
-            big_6 = st.select_slider('I see myself as someone who is outgoing, sociable.', options = options, value = "Neutral")
-            big_7 = st.select_slider('I see myself as someone who tends to find fault with others.', options = options, value = "Neutral")
-            big_8 = st.select_slider('I see myself as someone who does a thorough job.', options = options, value = "Neutral")
-            big_9 = st.select_slider('I see myself as someone who gets nervous easily.', options = options, value = "Neutral")
-            big_10 = st.select_slider('I see myself as someone who has an active imagination.', options = options, value = "Neutral")
+            big_1 = st.radio('I see myself as someone who is reserved.', options = options, index=None, horizontal=True)
+            big_2 = st.radio('I see myself as someone who is generally trusting.', options = options,  index=None, horizontal=True)
+            big_3 = st.radio('I see myself as someone who tends to be lazy.', options = options,  index=None, horizontal=True)
+            big_4 = st.radio('I see myself as someone who is relaxed, handles stress well.', options = options,  index=None, horizontal=True)
+            big_5 = st.radio('I see myself as someone who has few artistic interests.', options = options,  index=None, horizontal=True)
+            big_6 = st.radio('I see myself as someone who is outgoing, sociable.', options = options, index=None, horizontal=True)
+            big_7 = st.radio('I see myself as someone who tends to find fault with others.', options = options, index=None, horizontal=True)
+            big_8 = st.radio('I see myself as someone who does a thorough job.', options = options, index=None, horizontal=True)
+            big_9 = st.radio('I see myself as someone who gets nervous easily.', options = options, index=None, horizontal=True)
+            big_10 = st.radio('I see myself as someone who has an active imagination.', options = options,  index=None, horizontal=True)
 
 
             st.markdown("""
@@ -370,6 +374,9 @@ if state.INSTRUCTIONS_READ:
                 required = [gender, age, nationality, language, ethnicity,  language,  religion,  education,]
                 #cond = [llm_use, usecases, contexts,  prompt1, prompt2, prompt3, prompt4, prompt5, prompt6, prompt7, prompt8, prompt9, prompt10]
 
+                if any(field is None or field == "" for field in required):
+                    st.warning("Please complete all required fields in the form.")
+                    all_valid = False
 
                 demographic_information = [
                     gender, gender_other, age, ';'.join(nationality), ';'.join(ethnicity), ethn_free, ';'.join(language),  religion,  education
@@ -379,9 +386,10 @@ if state.INSTRUCTIONS_READ:
 
 
                 row = [annotator_id, session_id] + demographic_information + big5
-                write_to_file(row, demographics_url)
-            
-                state.form_filled = True
+                if all_valid:
+                    write_to_file(row, demographics_url)
+                
+                    state.form_filled = True
 
 
 
@@ -442,8 +450,9 @@ if state.form_filled:
 
     if any(dimensions):
         annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
-        knowledge = None
 
+if state.current_response_row == len(state.responses)-1:
+    annotation.write("This is the last utterance. Thank you for participating! The completion code is: ")
 
 
 
