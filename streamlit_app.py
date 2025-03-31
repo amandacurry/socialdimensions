@@ -83,8 +83,8 @@ if 'responses' not in state:
         worksheet="test_questions",
         ttl="0")[['id', 'text', 'h_text']].dropna()
     state.response_ratings = {}
-    state.responses = responses_to_annotate.sample(45)
-    state.test_rows = test_questions.sample(5)
+    state.responses = responses_to_annotate.sample(47)
+    state.test_rows = test_questions.sample(3)
     state.responses = pd.concat([state.responses, state.test_rows]).reset_index(drop=True)
     state.current_response_row = 0
     state.current_response = state.responses.iloc[[state.current_response_row]]
