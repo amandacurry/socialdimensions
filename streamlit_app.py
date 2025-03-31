@@ -440,7 +440,7 @@ if state.form_filled:
     if any(dimensions):
         annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
 
-if state.current_response_row == len(state.responses)-1:
+if state.current_response_row == len(state.responses):
     annotation.empty()
     st.subheader("Thank you!")
     annotation.write("This is the last utterance. Thank you for participating! The completion code is: C18E9D69")
