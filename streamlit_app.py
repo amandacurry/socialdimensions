@@ -277,7 +277,13 @@ if not state.INSTRUCTIONS_READ:
             - **Consider Context:** Some statements may seem neutral but imply deeper relational dimensions.  
             - **Apply Multiple Labels When Necessary:** If an interaction contains elements of multiple dimensions, assign all relevant labels.  
             - **Avoid Overgeneralization:** Focus on the specific intent and effect of the statement rather than assuming based on general tone.  
-            - **Disregard Sarcasm Unless Clear:** If sarcasm is ambiguous, label based on literal meaning.  
+            - **Disregard Sarcasm Unless Clear:** If sarcasm is ambiguous, label based on literal meaning. 
+                 
+            # App-specific:
+                 - Use your mouse where possible.
+                 - Use tab to move between fields, enter will try to submit the form.
+                 - If you have an error, first try "Re-run" in the top right corner (click on the three dots).
+                 - If that doesn't work, please contact us.
 
                  ''')
         st.button("I have read the instructions", on_click=lambda: state.update(INSTRUCTIONS_READ=True))
