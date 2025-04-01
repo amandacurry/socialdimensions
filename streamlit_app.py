@@ -37,13 +37,15 @@ countries = ['United States', 'United Kingdom', 'China', 'Canada', 'United Arab 
 def write_to_file(row, sheet_url):
     #sheet_url = collected_url #st.secrets["private_gsheets_url"] #this information should be included in streamlit secret
     sheet = client.open_by_url(sheet_url).sheet1
-    sheet.append_row(row, table_range="A1:Z1") 
-    #st.success('Data has been written to Google Sheets')
+    sheet.append_row(row, table_range="A1") 
     
 def annotate_response(labels, sheet):
     id = state.responses.iloc[state.current_response_row]['id']
     #state.response_ratings[id] = label
-    write_to_file([id, annotator_id, session_id].extend(labels), sheet)
+    print('id etc', [id, annotator_id, session_id])
+    labels = [annotator_id, session_id, id] + labels
+    write_to_file(labels, sheet)
+    print('labels', labels)
     state.current_response_row+=1
     state.run+=1
     state.r = random.randint(1, 2)
@@ -442,9 +444,11 @@ if state.INSTRUCTIONS_READ:
 
             
         dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
-
-
-        if any(dimensions):
+        if none and (knowledge or power or status or trust or support or similarity or identity or fun or conflict):
+            st.warning("Please select either 'None of the above' or one of the dimensions.")
+        elif other and not other_sp:
+            st.warning("Please specify the other dimension.")
+        elif dimensions.count(True) >= 1:
             annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
 
 if state.form_filled and state.current_response_row>=len(state.responses):
