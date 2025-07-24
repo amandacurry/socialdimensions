@@ -55,7 +55,7 @@ def get_user_annotation_count(username):
 
 @st.cache_data
 def get_items(username):
-    st.write('Fetching items for:', username)
+    #st.write('Fetching items for:', username)
     
     data = annotation_sheet.get_all_records()
     user_count = sum(1 for r in data if r.get("annotator") == username)
@@ -127,7 +127,7 @@ if 'PROLIFIC_PID' not in state:
         state.username = url_params['PROLIFIC_PID']
         state.session_id = url_params['state.session_id']
     else:
-        state.username = 'test1'
+        state.username = 'TEST'
         state.session_id ='test'
     state.prev_annotations = get_user_annotation_count(state.username)
     state.PROLIFIC_PID = True
@@ -457,7 +457,7 @@ if state.INSTRUCTIONS_READ:
         #st.write('index', state.row_index)
         with st.form("annotation_form"):
             st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
-            st.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
+            st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
             text = state.candidates[state.row_index]['text']
 
