@@ -9,6 +9,7 @@ from google.oauth2 import service_account
 from shillelagh.backends.apsw.db import connect
 import random
 
+
 st.set_page_config(
     page_title="Social Dimenstions Annotation Task",
     page_icon="👩‍💻",
@@ -19,6 +20,11 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
+ANNOTATIONS_PER_ITEM = 3
+ANNOTATIONS_PER_PERSON = 50
+ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1ZJICABhy361FCbYYxWmPbpKMI7nI_Bs7DRn4Le83TwY/edit?usp=sharing"
+SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/1KBhebUEIc3Y6kaTH6cUzYaDrFslxDt9bLU35UUTDD6A/edit?usp=sharing"
+demographics_url = "https://docs.google.com/spreadsheets/d/1iDwU43J-8OPCnfg9D8l2fOu36OwGlG3eitqHQ1iX_iM/edit?usp=sharing"
 
 
 # Create a connection object.
@@ -27,75 +33,127 @@ credentials = service_account.Credentials.from_service_account_info(
             st.secrets['connections']['gsheets'], 
             scopes=["https://www.googleapis.com/auth/spreadsheets",],)
 
-url = "https://docs.google.com/spreadsheets/d/1ZJICABhy361FCbYYxWmPbpKMI7nI_Bs7DRn4Le83TwY/edit?usp=sharing" # responses
-dataset_url = "https://docs.google.com/spreadsheets/d/1KBhebUEIc3Y6kaTH6cUzYaDrFslxDt9bLU35UUTDD6A/edit?usp=sharing"
-demographics_url = "https://docs.google.com/spreadsheets/d/1iDwU43J-8OPCnfg9D8l2fOu36OwGlG3eitqHQ1iX_iM/edit?usp=sharing"
-
 client=gspread.authorize(credentials)
 
+
+
+annotation_sheet = client.open_by_url(ANNOTATION_SHEET).sheet1
+
+source_sheet = client.open_by_url(SOURCE_SHEET).sheet1 
+
+state = st.session_state
+
+@st.cache_data(ttl=1200)  # refresh every 60 seconds
+def load_source_data():
+    return source_sheet.get_all_records()
+
+def get_user_annotation_count(username):
+    records = annotation_sheet.get_all_records()
+    return sum(1 for r in records if r["annotator"] == username)
+
+@st.cache_data
+def get_items(username):
+    st.write('Fetching items for:', username)
+    
+    data = annotation_sheet.get_all_records()
+    user_count = sum(1 for r in data if r.get("annotator") == username)
+    #st.write(f"User annotations so far: {user_count}")
+
+    if user_count >= ANNOTATIONS_PER_PERSON:
+        return []  # User reached max annotations
+
+    source_records = load_source_data()
+
+    # Count how many annotations each item has
+    item_annotation_counts = {}
+    for r in data:
+        item_id = r.get("id")
+        item_annotation_counts[item_id] = item_annotation_counts.get(item_id, 0) + 1
+
+    # Filter items that still need annotations
+    candidates = [row for row in source_records if item_annotation_counts.get(row["id"], 0) < ANNOTATIONS_PER_ITEM]
+    print(len(candidates))
+    # Exclude items already annotated by this user
+    user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == username}
+    candidates = [c for c in candidates if c.get("id") not in user_annotated_ids]
+    print(len(candidates))
+
+    if not candidates:
+        return []  # No items left to annotate
+
+    # Shuffle for randomness
+    random.shuffle(candidates)
+
+    # Limit to remaining quota
+    remaining_quota = ANNOTATIONS_PER_PERSON - user_count
+    next_items = candidates[:remaining_quota]
+
+    return next_items
+
+
+
+
 countries = ['United States', 'United Kingdom', 'China', 'Canada', 'United Arab Emirates', 'Australia', 'Andorra', 'Afghanistan', 'Antigua and Barbuda', 'Anguilla', 'Albania', 'Armenia', 'Angola', 'Antarctica', 'Argentina', 'American Samoa', 'Austria', 'Aruba', 'Azerbaijan', 'Bosnia and Herzegovina', 'Barbados', 'Bangladesh', 'Belgium', 'Burkina Faso', 'Bulgaria', 'Bahrain', 'Burundi', 'Benin', 'Saint Barthelemy', 'Bermuda', 'Brunei', 'Bolivia', 'Brazil', 'Bahamas, The', 'Bhutan', 'Bouvet Island', 'Botswana', 'Belarus', 'Belize', 'Cocos (Keeling) Islands', 'Congo, Democratic Republic of the', 'Central African Republic', 'Congo, Republic of the', 'Switzerland', 'Cote d\'Ivoire', 'Cook Islands', 'Chile', 'Cameroon', 'Colombia', 'Costa Rica', 'Cuba', 'Cape Verde', 'Curacao', 'Christmas Island', 'Cyprus', 'Czech Republic', 'Germany', 'Djibouti', 'Denmark', 'Dominica', 'Dominican Republic', 'Algeria', 'Ecuador', 'Estonia', 'Egypt', 'Western Sahara', 'Eritrea', 'Spain', 'Ethiopia', 'Finland', 'Fiji', 'Falkland Islands (Islas Malvinas)', 'Micronesia, Federated States of', 'Faroe Islands', 'France', 'France, Metropolitan', 'Gabon', 'Grenada', 'Georgia', 'French Guiana', 'Guernsey', 'Ghana', 'Gibraltar', 'Greenland', 'Gambia, The', 'Guinea', 'Guadeloupe', 'Equatorial Guinea', 'Greece', 'South Georgia and the Islands', 'Guatemala', 'Guam', 'Guinea-Bissau', 'Guyana', 'Hong Kong (SAR China)', 'Heard Island and McDonald Islands', 'Honduras', 'Croatia', 'Haiti', 'Hungary', 'Indonesia', 'Ireland', 'Israel', 'Isle of Man', 'India', 'British Indian Ocean Territory', 'Iraq', 'Iran', 'Iceland', 'Italy', 'Jersey', 'Jamaica', 'Jordan', 'Japan', 'Kenya', 'Kyrgyzstan', 'Cambodia', 'Kiribati', 'Comoros', 'Saint Kitts and Nevis', 'Korea, South', 'Kuwait', 'Cayman Islands', 'Kazakhstan', 'Laos', 'Lebanon', 'Saint Lucia', 'Liechtenstein', 'Sri Lanka', 'Liberia', 'Lesotho', 'Lithuania', 'Luxembourg', 'Latvia', 'Libya', 'Morocco', 'Monaco', 'Moldova', 'Montenegro', 'Saint Martin', 'Madagascar', 'Marshall Islands', 'Macedonia', 'Mali', 'Burma', 'Mongolia', 'Macau (SAR China)', 'Northern Mariana Islands', 'Martinique', 'Mauritania', 'Montserrat', 'Malta', 'Mauritius', 'Maldives', 'Malawi', 'Mexico', 'Malaysia', 'Mozambique', 'Namibia', 'New Caledonia', 'Niger', 'Norfolk Island', 'Nigeria', 'Nicaragua', 'Netherlands', 'Norway', 'Nepal', 'Nauru', 'Niue', 'New Zealand', 'Oman', 'Panama', 'Peru', 'French Polynesia', 'Papua New Guinea', 'Philippines', 'Pakistan', 'Poland', 'Saint Pierre and Miquelon', 'Pitcairn Islands', 'Puerto Rico', 'Gaza Strip', 'West Bank', 'Portugal', 'Palau', 'Paraguay', 'Qatar', 'Reunion', 'Romania', 'Serbia', 'Russia', 'Rwanda', 'Saudi Arabia', 'Solomon Islands', 'Seychelles', 'Sudan', 'Sweden', 'Singapore', 'Saint Helena, Ascension, and Tristan da Cunha', 'Slovenia', 'Svalbard', 'Slovakia', 'Sierra Leone', 'San Marino', 'Senegal', 'Somalia', 'Suriname', 'South Sudan', 'Sao Tome and Principe', 'El Salvador', 'Sint Maarten', 'Syria', 'Swaziland', 'Turks and Caicos Islands', 'Chad', 'French Southern and Antarctic Lands', 'Togo', 'Thailand', 'Tajikistan', 'Tokelau', 'Timor-Leste', 'Turkmenistan', 'Tunisia', 'Tonga', 'Turkey', 'Trinidad and Tobago', 'Tuvalu', 'Taiwan, Province of China', 'Tanzania', 'Ukraine', 'Uganda', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Holy See (Vatican City)', 'Saint Vincent and the Grenadines', 'Venezuela', 'British Virgin Islands', 'Virgin Islands', 'Vietnam', 'Vanuatu', 'Wallis and Futuna', 'Samoa', 'Kosovo', 'Yemen', 'Mayotte', 'South Africa', 'Zambia', 'Zimbabwe']
+
 def write_to_file(row, sheet_url):
     #sheet_url = collected_url #st.secrets["private_gsheets_url"] #this information should be included in streamlit secret
     sheet = client.open_by_url(sheet_url).sheet1
     sheet.append_row(row, table_range="A1") 
+
+def save_annotation(item_id, username, annotation_text):
+    annotation_sheet.append_row([username, item_id, annotation_text])
+
+
+def annotate_response(dimensions, url):
+    st.session_state.is_submitting = True
+    if st.session_state.is_submitting:
+        with st.spinner("Saving your annotation..."):
+            labels = [state.username, state.session_id, state.candidates[0]["id"]] + dimensions
+            write_to_file(labels, url)
+            state.row_index+=1
+            state.candidates.pop(0)
+    st.session_state.is_submitting = False
     
-def annotate_response(labels, sheet):
-    id = state.responses.iloc[state.current_response_row]['id']
-    #state.response_ratings[id] = label
-    print('id etc', [id, annotator_id, session_id])
-    labels = [annotator_id, session_id, id] + labels
-    write_to_file(labels, sheet)
-    print('labels', labels)
-    state.current_response_row+=1
-    state.run+=1
-    state.r = random.randint(1, 2)
-    if state.current_response_row<len(state.responses)-1:
-        state.current_response = state.responses.iloc[[state.current_response_row]]
 
-def bold_substring(text, substring):
-    return text.replace(substring, f"<b>{substring}</b>")
-
-
-### Defining state:
-state = st.session_state
-
+#state.username = st.text_input("Enter your state.username:")
 if 'PROLIFIC_PID' not in state:
     if st.query_params.to_dict():
         url_params = st.query_params.to_dict()
-        annotator_id = url_params['PROLIFIC_PID']
-        session_id = url_params['SESSION_ID']
+        state.username = url_params['PROLIFIC_PID']
+        state.session_id = url_params['state.session_id']
     else:
-        annotator_id = 'test'
-        session_id = 'test'
+        state.username = 'test2'
+        state.session_id = 'test'
+    state.prev_annotations = get_user_annotation_count(state.username)
+    state.PROLIFIC_PID = True
+
+# Initialize state
+if "is_submitting" not in st.session_state:
+    st.session_state.is_submitting = False
+
 
 if 'INSTRUCTIONS_READ' not in state:
     state.INSTRUCTIONS_READ = False
+if 'INSTRUCTIONS' not in state:
+    state.INSTRUCTIONS = 0
 
 if "form_filled" not in state:
     state.form_filled = False
 
+if "candidates"  not in state:
+    #st.write('hello')
+    state.candidates = get_items(state.username)
 
-if 'responses' not in state:
-    responses_to_annotate = conn.read(
-        spreadsheet=dataset_url,
-        worksheet="Sheet1",
-        ttl="0")[['id', 'text', 'h_text']].dropna()
-    test_questions = conn.read(
-        spreadsheet=dataset_url,
-        worksheet="test_questions",
-        ttl="0")[['id', 'text', 'h_text']].dropna()
-    state.response_ratings = {}
-    state.responses = responses_to_annotate.sample(47)
-    state.test_rows = test_questions.sample(3)
-    state.responses = pd.concat([state.responses, state.test_rows]).reset_index(drop=True)
-    state.current_response_row = 0
-    state.current_response = state.responses.iloc[[state.current_response_row]]
-    state.run = 0
-    state.r = random.randint(1, 2)
+if "row_index" not in state:
+    state.row_index = 0
+    #state.current_item = state.candidates[state.row_index]
 
-if 'INSTRUCTIONS' not in state:
-    state.INSTRUCTIONS = 0
+if state.prev_annotations>0:
+    state.INSTRUCTIONS_READ = True
+    state.form_filled = True
 
+
+placeholder = st.empty()
 
 ########### DEMOGRAPHICS FORM ##############
 placeholder = st.empty()
@@ -290,9 +348,8 @@ if not state.INSTRUCTIONS_READ:
                  ''')
         st.button("I have read the instructions", on_click=lambda: state.update(INSTRUCTIONS_READ=True))
         
-    
 
-#if not state.form_filled:
+
 if state.INSTRUCTIONS_READ:
     if not state.form_filled:
         with placeholder.container():
@@ -383,77 +440,81 @@ if state.INSTRUCTIONS_READ:
                     big5 = [big_1, big_2, big_3, big_4, big_5, big_6, big_7, big_8, big_9, big_10]
 
 
-                    row = [annotator_id, session_id] + demographic_information + big5
+                    row = [state.username, state.session_id] + demographic_information + big5
                     if all_valid:
                         write_to_file(row, demographics_url)
-                    
                         state.form_filled = True
+                        st.rerun()
 
 
 
-
-    if state.form_filled and state.current_response_row<len(state.responses):
-        placeholder.empty()
+    if state.form_filled and state.row_index+state.prev_annotations<ANNOTATIONS_PER_PERSON:
+        #st.write('index', state.row_index)
+        with st.form("annotation_form"):
+            st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
+            st.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
-        annotation = st.container(border=True)
-        annotation.subheader("Utterance {} of {} ".format(state.current_response_row+1, len(state.responses)))
-        annotation.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
-        text = bold_substring(state.responses.iloc[state.current_response_row]['text'], state.responses.iloc[state.current_response_row]['h_text'])
-        #annotation.write(state.responses.iloc[state.current_response_row]['text'])
-        #annotation.markdown(text)
+            text = state.candidates[state.row_index]['text']
 
-        annotation.markdown(
-            """
-            <style>
-                .highlight {
-                    background-color: whitesmoke;
-                    padding: 10px;
-                    border-radius: 5px;
-                    display: block;
-                    margin: 20px;
-                    font-size: 18px;
-                }
-            </style>
-            <div class="highlight">
-                """ + text + """
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            st.markdown(
+                f"""
+                <style>
+                    .highlight {{
+                        background-color: whitesmoke;
+                        padding: 10px;
+                        border-radius: 5px;
+                        display: block;
+                        margin: 20px;
+                        font-size: 18px;
+                    }}
+                </style>
+                <div class="highlight">
+                    {text}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-        annotation.write("Which of the following social dimensions apply to the section in **bold**?")
-        
-        #romance = annotation.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key='rom_'+str(state.run))  
-        fun = annotation.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key='fun_'+str(state.run))
-
-        trust = annotation.checkbox('**Trust**: Will of relying on the actions or judgments of another', key='trust_'+str(state.run))  
-        support = annotation.checkbox('**Support**: Giving emotional or practical aid and companionship', key='supp_'+str(state.run))  
-        similarity = annotation.checkbox('**Similarity**: Shared interests, motivations or outlooks', key='sim_'+str(state.run))  
-        identity = annotation.checkbox('**Identity**: Shared sense of belonging to the same community or group', key='id_'+str(state.run))  
-        
-        status = annotation.checkbox('**Status**: Conferring status, appreciation, gratitude, or admiration upon another', key='stat_'+str(state.run))  
-
-        knowledge = annotation.checkbox('**Knowledge**: Exchange of ideas or information; learning, teaching', key='know_'+str(state.run))  
-        power = annotation.checkbox('**Power**: Having power over the behavior and outcomes of another', key='pow_'+str(state.run))  
-
-        conflict = annotation.checkbox('**Conflict**: Contrast or diverging views', key='con_'+str(state.run)) 
-
-        other = annotation.checkbox('Other', key='oth_'+str(state.run))
-        other_sp = annotation.text_input('If you selected other, please specify:', key = 'other_'+str(state.run))
-        none = annotation.checkbox('None of the above', key='none_'+str(state.run))
-
+            st.write("Which of the following social dimensions apply to the section in **bold**?")
             
-        dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
-        if none and (knowledge or power or status or trust or support or similarity or identity or fun or conflict):
-            st.warning("Please select either 'None of the above' or one of the dimensions.")
-        elif other and not other_sp:
-            st.warning("Please specify the other dimension.")
-        elif dimensions.count(True) >= 1:
-            annotation.button("Submit", on_click=annotate_response, args=(dimensions, url))
+            state.run = state.row_index  # keep for unique keys
+            fun = st.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key=f'fun_{state.run}')
+            romance = st.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship, flirting. It does not include general discussion around sex and sexuality.', key=f'rom_{state.run}')  
+            trust = st.checkbox('**Trust**: Will of relying on the actions or judgments of another', key=f'trust_{state.run}')  
+            support = st.checkbox('**Support**: Giving emotional or practical aid and companionship', key=f'supp_{state.run}')  
+            similarity = st.checkbox('**Similarity**: Shared interests, motivations or outlooks', key=f'sim_{state.run}')  
+            identity = st.checkbox('**Identity**: Shared sense of belonging to the same community or group', key=f'id_{state.run}')  
+            status = st.checkbox('**Status**: Conferring status, appreciation, gratitude, or admiration upon another', key=f'stat_{state.run}')  
+            knowledge = st.checkbox('**Knowledge**: Exchange of ideas or information; learning, teaching', key=f'know_{state.run}')  
+            power = st.checkbox('**Power**: Having power over the behavior and outcomes of another', key=f'pow_{state.run}')  
+            conflict = st.checkbox('**Conflict**: Contrast or diverging views', key=f'con_{state.run}') 
+            other = st.checkbox('Other', key=f'oth_{state.run}')
+            other_sp = st.text_input('If you selected other, please specify:', key=f'other_{state.run}')
+            none = st.checkbox('None of the above', key=f'none_{state.run}')
 
-if state.form_filled and state.current_response_row>=len(state.responses):
-    st.subheader("Thank you!")
-    placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
+            # Submit button for the form
+            submitted = st.form_submit_button("Submit")
+
+            if submitted:
+                dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none, romance]
+                
+                # Validation
+                if none and (knowledge or power or status or trust or support or similarity or identity or fun or conflict or romance):
+                    st.warning("Please select either 'None of the above' or one of the dimensions.")
+                elif other and not other_sp:
+                    st.warning("Please specify the other dimension.")
+                elif any(dimensions):  # At least one selected
+                    annotate_response(dimensions, ANNOTATION_SHEET)
+                    #st.success("Annotation submitted!")
+                    st.rerun()  # Load next item automatically
+                else:
+                    st.warning("Please select at least one option.")
 
 
+    
+    elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
+        st.subheader("Thank you!")
+        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
+
+ 
 

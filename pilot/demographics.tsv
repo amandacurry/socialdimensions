@@ -1,0 +1,140 @@
+annotator_id	session_id	gender	gender_other	age	nationality	ethnicity	eth_other	language	religion	education	reserved	trusting	lazy	relaxed	not_artistic	outgoing	hates_others	detailed	nervous	imaginative
+test	test																			
+test	test																			
+test	test																			
+test	test									Undergraduate degree										
+test	test										Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral
+test	test										Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral
+test	test										Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral
+test	test	Male		35-44	United Kingdom	Asian / Pacific Islander		Arabic	Muslim	Graduate degree	Disagree	Agree	Agree	Neutral	Neutral	Strongly disagree	Neutral	Neutral	Neutral	Neutral
+test	test	Male		35-44	Italy	White / Caucasian		Other (Please Specify)	None	Doctorate or above	Agree	Agree	Disagree	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral
+test	test																			
+test	test										Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral	Neutral
+test	test																			
+test	test	Female		35-44	China	White / Caucasian		Spanish	Jewish	Graduate degree										
+test	test	Non-binary		45-54	Canada	Black or African American		Chinese	Muslim	Undergraduate degree										
+5e3c29ac4c3831000c5bdb68	67ea603b8b0f0d16def2841f	Female		35-44	United Kingdom	Black or African American		English	Christian	Undergraduate degree	Strongly agree	Strongly agree	Disagree	Agree	Disagree	Disagree	Disagree	Agree	Neutral	Agree
+67a6a0c74a3c55b182b871eb	67ea610099fc467c22a3f162	Male		18-24	United Kingdom	Other. Please specify	Asian British 	English	None	Undergraduate degree	Agree	Agree	Strongly disagree	Agree	Neutral	Agree	Strongly disagree	Neutral	Strongly disagree	Agree
+56cb9da4edf8da00066e7028	67ea60ea5c1437e27d175041	Non-binary		25-34	United Kingdom	Asian / Pacific Islander		English;Chinese	None	Graduate degree	Disagree	Agree	Agree	Disagree	Strongly disagree	Strongly agree	Disagree	Neutral	Disagree	Agree
+5bd3836f3eb03800011413a1	67ea604ec9d4aa0a58451b2a	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Agree	Agree	Neutral	Neutral	Disagree	Neutral	Disagree	Agree	Neutral	Agree
+67e8fe605b99434cf4cf8bd1	67ea6103b151743e8217c8f2	Male		25-34	United States	White / Caucasian		English	Christian	Doctorate or above	Agree	Strongly agree	Disagree	Agree	Agree	Strongly agree	Disagree	Agree	Disagree	Agree
+67e9728e0e7390c9a1ad6a7a	67ea61581310ad259642a65b	Female		45-54	United States	Black or African American		English	Christian	Doctorate or above	Agree	Strongly agree	Disagree	Agree	Agree	Strongly agree	Strongly agree	Strongly agree	Neutral	Agree
+67e4734d1e606cd162f6f4b7	67ea6016e4f61ef52cfda7f9	Female		60+	United States	White / Caucasian		English	Christian	Graduate degree	Neutral	Disagree	Disagree	Agree	Agree	Agree	Disagree	Agree	Neutral	Agree
+67e84a437710928eec3031c1	67ea624666268848c2a716d2	Female		35-44	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Agree	Agree	Agree	Agree	Agree		Agree	Agree
+5f913f231d26e9000aa398e4	67ea626812001406472223fd	Female		45-54		White / Caucasian		English	Christian	Undergraduate degree	Agree	Agree	Agree	Neutral	Disagree	Neutral	Agree	Agree	Disagree	Strongly agree
+67e325be9b288881498ac9e7	67ea626437af1bdefd97e7b6	Female		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Neutral	Neutral	Strongly disagree	Agree	Disagree	Agree	Disagree	Agree	Agree	Agree
+5bd3836f3eb03800011413a1	67ea604ec9d4aa0a58451b2a	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Agree	Agree	Neutral	Neutral	Disagree	Neutral	Disagree	Agree	Neutral	Agree
+67db244facbdee9c8130f9e6	67ea625860f71480cd4751d2	Male		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Neutral	Strongly agree	Strongly disagree	Strongly agree	Disagree	Neutral	Strongly disagree	Strongly agree	Neutral	Strongly agree
+5bd3836f3eb03800011413a1	67ea604ec9d4aa0a58451b2a	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Agree	Agree	Neutral	Neutral	Disagree	Neutral	Disagree	Agree	Neutral	Agree
+65cf8daaaf679c7816f3a1b4	67ea60757830b3a88190f936	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Strongly agree	Disagree	Agree	Strongly disagree	Agree	Neutral	Agree	Neutral	Disagree
+67e84a437710928eec3031c1	67ea624666268848c2a716d2	Female		35-44	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Agree	Agree	Agree	Agree	Agree	Agree	Agree	Agree
+5aff3d05b98c410001ad538b	67ea6438685a2bce3eacba59	Male		35-44	United Kingdom	White / Caucasian		English	None	High school or below	Disagree	Agree	Disagree	Agree	Agree	Agree	Disagree	Agree	Disagree	Neutral
+test	test	Female		25-34	China	Hispanic			Jewish	Graduate degree	Agree									
+test	test	Female		18-24	China	Black or African American		German	Jewish	Undergraduate degree										
+5c75c7c92c662600014eb328	67ea634b7e2d0ccb611a3507	Female		60+	Ireland	White / Caucasian		English	Christian	Undergraduate degree	Neutral	Disagree	Neutral	Neutral	Agree	Agree	Neutral	Strongly agree	Disagree	Agree
+test	test	Female		45-54	China	Asian / Pacific Islander		Spanish	Muslim	Undergraduate degree										
+67e84538e6f39b2aa9b5852c	67ea63a625d5d44681cfcdd6	Female		25-34	United States				Christian	Doctorate or above	Neutral	Agree	Strongly disagree	Agree	Neutral	Agree	Strongly disagree	Agree	Disagree	Agree
+651282bee74e48b581f77d04	67ea6437273c2e2c1e9de2c8	Female		25-34	United Kingdom	Black or African American		English	Christian	Graduate degree	Disagree	Agree	Strongly disagree	Neutral	Disagree	Agree	Disagree	Agree	Neutral	Agree
+test	test	Non-binary		35-44	China	Asian / Pacific Islander		Chinese	Muslim	Doctorate or above										
+67e8fe605b99434cf4cf8bd1	67ea6103b151743e8217c8f2	Male		25-34	United States	White / Caucasian		English	Christian	Doctorate or above	Agree	Agree	Disagree	Agree	Strongly agree	Agree	Disagree	Agree	Disagree	Agree
+67df3cab7afcdb449190b3b7	67ea64ef25fbd6a087fd8d9b	Male	67df3cab7afcdb449190b3b7	55-60	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Strongly agree	Disagree	Agree	Agree	Agree	Strongly agree	Agree	Neutral	Agree
+67e4734d1e606cd162f6f4b7	67ea6016e4f61ef52cfda7f9	Female		60+	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Disagree	Agree	Agree	Neutral	Neutral	Agree	Neutral	Agree
+67e84538e6f39b2aa9b5852c	67ea63a625d5d44681cfcdd6	Female		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Strongly disagree	Agree	Neutral	Agree	Strongly disagree	Agree	Disagree	Agree
+67db244facbdee9c8130f9e6	67ea625860f71480cd4751d2	Male		35-44	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Strongly agree	Strongly disagree	Strongly agree	Neutral	Strongly agree	Strongly agree	Strongly agree	Strongly disagree	Strongly agree
+test	test	Female		25-34	United Kingdom	Hispanic		German	Buddhist	Undergraduate degree										
+test	test	Female		35-44	Australia	Other. Please specify		Spanish	Muslim	Graduate degree										
+test	test	Female		25-34	United States	Asian / Pacific Islander		Spanish	Muslim	Undergraduate degree										
+test	test	Other, please specify.		25-34	Canada	Black or African American		French	None	Prefer not to say										
+test	test	Other, please specify.		25-34	United Arab Emirates	American Indian or Alaskan Native		Spanish	None	High school or below										
+test	test	Female		35-44	Canada	American Indian or Alaskan Native		German	Jewish	Graduate degree										
+test	test	Non-binary		35-44	Australia	Black or African American		Spanish	Muslim	Graduate degree										
+67db244facbdee9c8130f9e6	67ea625860f71480cd4751d2	Male		25-34	United States	American Indian or Alaskan Native		English	Christian	Graduate degree	Agree	Agree	Strongly disagree	Strongly agree	Agree	Strongly agree	Disagree	Strongly agree	Strongly agree	Strongly agree
+test	test	Male		18-24	United Kingdom	American Indian or Alaskan Native		English	Prefer not to say	Undergraduate degree										
+test	test	Female		25-34	United Kingdom	Asian / Pacific Islander		Spanish	Other, please specify.	Doctorate or above										
+test	test	Non-binary		25-34	China	Black or African American		German	Christian	Undergraduate degree										
+test	test	Female		18-24	Canada	Asian / Pacific Islander;White / Caucasian		German	Muslim	Undergraduate degree										
+test	test	Female	kjb k	25-34	Australia	Black or African American		Spanish	Muslim	Undergraduate degree										
+5dad7f29033d57001357a2b8	67ebf188bee2f9ca11382f2f	Male		25-34	United Kingdom	White / Caucasian		English	Christian	Graduate degree	Neutral	Strongly agree	Agree	Neutral	Strongly agree	Neutral	Agree	Agree	Strongly agree	Strongly agree
+62e2a39f43edf949ff427012	67ebf1399f7513d29b347a53	Female		25-34	United States	Black or African American		English	Christian	High school or below	Neutral	Strongly disagree	Strongly disagree	Neutral	Strongly agree	Neutral	Strongly agree	Strongly agree	Strongly agree	Neutral
+60008d84492c15142cb897b3	67ebf35b6878af3a8ef5480c	Female		35-44	United Kingdom			English	None	Undergraduate degree	Agree	Agree	Disagree	Agree	Neutral	Agree	Disagree	Agree	Agree	Neutral
+67376ab89f1322d144ef3a0d	67ebf2df20df93c9155d6c3a	Female		45-54	United Kingdom	White / Caucasian			Christian	Graduate degree	Neutral	Agree	Agree	Agree	Disagree	Agree	Disagree	Agree	Neutral	Neutral
+66620946dcd11035bee93351	67ebf4b06d58ee5684581154	Female		25-34	United Kingdom	White / Caucasian		English	None	High school or below	Agree	Neutral	Neutral	Agree	Agree	Neutral	Neutral	Neutral	Agree	Agree
+595398234d56070001645fd9	67ebf454b340b9a969901a07	Female		45-54	United Kingdom	White / Caucasian		English	Christian	High school or below	Strongly agree	Disagree	Disagree	Strongly disagree	Agree	Strongly disagree	Strongly agree	Agree	Strongly agree	Disagree
+5c330cefca23620001b262b1	67ebf1fd7e02475dbe7d11e8	Female		55-60	United States	Black or African American		English	Christian	High school or below	Agree	Disagree	Disagree	Disagree	Disagree	Strongly disagree	Agree	Agree	Neutral	Strongly agree
+60f721d4166d006a54527ada	67ebf5427b5863dc3fd470df	Male		35-44	United Kingdom	White / Caucasian		English	None	High school or below	Neutral	Strongly agree	Neutral	Strongly disagree	Neutral	Strongly agree	Agree	Strongly agree	Agree	Agree
+67def7550d3ea744c79f65f5	67ebf3e29bf1aa42d7e69018	Female		45-54	United States	Black or African American		English	Christian	Graduate degree	Agree	Agree	Agree	Neutral	Agree	Strongly agree	Strongly agree	Strongly agree	Agree	Agree
+5f7e0c5f582257095a86ff6e	67ebf5ab1c4814bbaac1dac1	Female		35-44	United Kingdom	White / Caucasian			None	Undergraduate degree	Agree	Agree	Neutral	Neutral	Disagree	Disagree	Neutral	Agree	Agree	Agree
+56c9e4d9b30699000bd974a5	67ebf5b89710bd246f7cccc4	Male		35-44	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Disagree	Disagree	Agree	Strongly disagree	Neutral	Strongly agree	Strongly agree	Agree	Agree	Agree
+66a79366e9d1eb8c901a2b23	67ebf51f77da4e5b6758f2b7	Female		18-24	United States	Black or African American		English	Christian	Undergraduate degree	Neutral	Agree	Disagree	Agree	Neutral	Strongly agree	Disagree	Agree	Disagree	Agree
+67e6b586b2bbf7154e9a99f6	67ebf50c57195bae28d7bcb0	Male		45-54	United States	White / Caucasian		English	Christian	Doctorate or above	Strongly agree	Agree	Agree	Strongly agree	Agree	Agree	Disagree	Agree	Disagree	Strongly agree
+5c93fa19104ec70017bfa894	67ebf6ede1fa27dd75cec93c	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Strongly agree	Disagree	Neutral	Agree	Neutral	Neutral	Agree	Strongly agree	Disagree
+664374cf42fe8232f2fe88cb	67ebf73f2fcf092d1df4deeb	Male		55-60	United Kingdom	White / Caucasian		English	None	High school or below	Agree	Agree	Agree	Disagree	Disagree	Strongly disagree	Agree	Agree	Agree	Strongly agree
+64142db4208a2c5766778166	67ebf48d3b1be1207297e89c	Female		25-34	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Strongly disagree	Strongly agree	Neutral	Disagree	Strongly disagree	Strongly agree	Strongly disagree	Agree	Disagree	Strongly agree
+5c93fa19104ec70017bfa894	67ebf6ede1fa27dd75cec93c	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Strongly agree	Disagree	Neutral	Neutral	Neutral	Neutral	Agree	Strongly agree	Neutral
+5e90a3adb3e1243bdcfaf973	67ebf7cc90dfe00c77978d67	Male		35-44	United Kingdom	Asian / Pacific Islander		English	Muslim	High school or below	Agree	Agree	Agree	Disagree	Disagree	Disagree	Agree	Agree	Agree	Agree
+5e84db53a96e090b19bdc56a	67ebf83a6b03a52c961027dd	Male		25-34	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Neutral	Agree	Disagree	Agree	Disagree	Strongly disagree	Disagree	Agree	Neutral	Agree
+67c0c14fbddddc5e06a65ff4	67ebf7b58a7ae6a0d44d734e	Female		18-24	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Agree	Strongly agree	Disagree	Strongly disagree	Disagree	Agree	Agree	Agree	Agree
+62d999e7f5f2cde114f4169e	67ebf7b605cd23279049a87a	Female		25-34	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Strongly agree	Disagree	Neutral	Disagree	Neutral	Disagree	Agree	Neutral	Agree	Agree
+5c7daea2da78bc0015257905	67ebf8a9486084fab7aa2130	Female		25-34	United Kingdom	White / Caucasian		English	None	High school or below	Agree	Agree	Agree	Neutral	Neutral	Disagree	Neutral	Neutral	Strongly agree	Agree
+5eb9b5c67bb5c60e4ab0974e	67ebf93dd46457f8599899d2	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Agree	Neutral	Disagree	Disagree	Agree	Agree	Agree	Agree	Agree
+5ffefe289a45d160a6199c28	67ebf8409ec3c6867d2a5bdf	Female		25-34	United Kingdom	Black or African American		English	Christian	High school or below	Agree	Agree	Neutral	Neutral	Agree	Neutral	Disagree	Agree	Agree	Agree
+6113d05ff415bab1824688e3	67ebf98886bfa8e51b3ead8d	Male		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Agree		Agree	Disagree	Disagree	Strongly disagree	Disagree	Strongly agree	Agree
+5ecd22e76997ec03464c71aa	67ebf9ef04f2590dbb391552	Male		55-60	United Kingdom	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Disagree	Strongly agree	Strongly disagree	Neutral	Disagree	Agree		Agree
+6575c4ea606a4f38b29e4e5d	67ebfa8cb864b1ada80919d9	Female		45-54	United Kingdom	White / Caucasian		English	None	High school or below	Disagree	Neutral	Strongly disagree	Agree	Disagree	Agree	Disagree	Strongly agree	Strongly disagree	Neutral
+67e2b20be12da665d555064d	67ebfa928eb1ea379918bb2f	Female		35-44	United States	White / Caucasian		English	Christian	Undergraduate degree	Strongly agree	Neutral	Agree	Strongly agree	Neutral	Agree	Neutral	Strongly agree	Disagree	Agree
+5ecd22e76997ec03464c71aa	67ebf9ef04f2590dbb391552	Male		55-60	United Kingdom	White / Caucasian		English	Christian	Graduate degree	Agree	Agree	Disagree	Strongly agree	Strongly disagree	Neutral	Disagree	Agree	Agree	Agree
+67cb4e757f373c872e985744	67ebfac3a0268b66dbdfc319	Male		25-34	United States	White / Caucasian		English	Christian	Undergraduate degree	Agree	Agree	Strongly disagree	Strongly agree	Disagree	Neutral	Disagree	Agree	Neutral	Neutral
+67e2b20be12da665d555064d	67ebfa928eb1ea379918bb2f	Female		35-44	United States	White / Caucasian		English	Christian	Undergraduate degree	Agree	Neutral	Strongly agree	Neutral	Agree	Strongly agree	Disagree	Neutral	Disagree	Agree
+6113d05ff415bab1824688e3	67ebf98886bfa8e51b3ead8d	Male		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Agree	Agree	Disagree	Disagree	Disagree	Strongly disagree	Disagree	Strongly agree	Agree
+662e8362fe2934ca86a16596	67ebfc06d681096a46c9b4cb	Male		35-44	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Neutral	Agree	Disagree	Neutral	Neutral	Disagree	Neutral	Agree	Neutral	Agree
+6405ea70e659d84377d7cdb1	67ebfc8182c55e4c6dfbb7c2	Female		60+	United Kingdom	White / Caucasian		English	Christian	Undergraduate degree	Agree	Neutral	Strongly disagree	Neutral	Disagree	Neutral	Disagree	Strongly agree	Neutral	Strongly agree
+666ed73e4b49ad92368677b3	67ebf8beec225a2edf7ccda5	Female		25-34	Ireland	Black or African American		English	None	Undergraduate degree	Neutral	Agree	Neutral	Neutral	Disagree	Neutral	Neutral	Neutral	Agree	Agree
+665efdf173820edd2b8d4d23	67ebfcf0e07fe9e4dff4e090	Male		18-24	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Strongly agree	Agree	Agree	Disagree	Disagree	Neutral	Agree	Strongly agree	Agree	Strongly agree
+56abcb46f209e0000adab961	67ebfdb4c285614e0c9dee7a	Female		60+	United Kingdom	White / Caucasian			None	Undergraduate degree	Strongly agree	Disagree	Strongly agree	Strongly disagree	Neutral	Disagree	Agree	Strongly agree	Neutral	Disagree
+5d8ceadadad82b0016bac50b	67ebfde662000b40c9f9a87d	Male		35-44	United Kingdom	White / Caucasian		English	None	Graduate degree	Agree	Agree	Disagree	Strongly disagree	Strongly disagree	Disagree	Disagree	Neutral	Agree	Agree
+6635054dfb8caedd407ca84b	67ebfcaf7a03bcc08ae3fcd0	Female		35-44	United States	Black or African American		English	Christian	Undergraduate degree	Disagree	Strongly agree	Disagree	Agree	Disagree	Strongly agree	Disagree	Strongly agree	Disagree	Strongly agree
+5ae31a8b9c97020001d1eaa7	67ebfd6a81d4b2be7c626010	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Disagree	Agree	Strongly disagree	Strongly agree	Agree	Disagree	Disagree	Strongly agree	Strongly disagree	Agree
+5d766978f47e6200019a2acf	67ebfca2e1fa27dd75ceca88	Female		25-34	United Kingdom	Other. Please specify	Turkish Cypriot	English;Other (Please Specify)	Muslim	Undergraduate degree	Neutral	Disagree	Disagree	Neutral	Neutral	Neutral	Neutral	Agree	Agree	Neutral
+5f1ca37bcecc12026413cb96	67ec00324042c33c75996cf8	Female		45-54	United Kingdom	White / Caucasian		English	None	Doctorate or above	Agree	Agree	Strongly disagree	Strongly agree	Neutral	Agree	Disagree	Strongly agree	Strongly disagree	Neutral
+6780e19788c49807b7456e50	67ebff027a03bcc08ae3fd56	Male		25-34	United States			English	Christian	Graduate degree	Agree	Strongly agree	Agree	Strongly agree	Agree	Agree	Strongly agree	Agree	Strongly agree	Agree
+615567110b3d6e418c6add32	67ec01cd417192d790e5002e	Male		25-34	United States	Hispanic		English	Christian	High school or below	Agree	Agree	Neutral	Agree	Agree	Agree	Agree	Agree	Agree	Agree
+63d7a35134c4f6e440e9468f	67ec019877dea5e0d024b84e	Male		25-34	United Kingdom	White / Caucasian		English	None	High school or below	Agree	Agree	Disagree	Strongly agree	Disagree	Agree	Disagree	Agree	Disagree	Agree
+6780e19788c49807b7456e50	67ebff027a03bcc08ae3fd56	Male		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Agree	Strongly agree	Agree	Agree	Strongly agree	Agree	Disagree	Agree	Agree	Strongly agree
+6658cedd861dfccb74f531e2	67ec01dc8ac5b3cd18195541	Female		45-54	United Kingdom	White / Caucasian		English	None	High school or below	Disagree	Agree	Strongly disagree	Agree	Disagree	Agree	Strongly disagree	Strongly agree	Agree	Agree
+6120d602c1976a4114dcb110	67ec02293cccaca61ec479ec	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Strongly agree	Disagree	Neutral	Disagree	Disagree	Neutral	Neutral	Agree	Agree	Agree
+666eb35969608063b3316521	67ec02566e6e697a057ee3e0	Male		25-34	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Agree	Neutral	Neutral	Neutral	Disagree	Neutral	Disagree	Agree	Agree	Agree
+671ce69ff883fe3c3ae81cdf	67ec02a34fb91436ef825509	Female		45-54	United Kingdom	White / Caucasian		English	None	Graduate degree	Disagree	Agree	Neutral	Agree	Agree	Agree	Disagree	Neutral	Disagree	Agree
+6738e8674919d1c111aa48fe	67ec024933aeb6ccdca45565	Male		25-34	United States;United Kingdom	White / Caucasian;Other. Please specify		English	Christian	Graduate degree	Neutral	Agree	Neutral	Agree	Neutral	Agree	Strongly agree	Neutral	Agree	Neutral
+5c5ff87f8c0552000109d7de	67ec03138f5c5654ab995a99	Female		25-34	United Kingdom			English	None	High school or below	Strongly agree	Agree	Agree	Disagree	Neutral	Strongly disagree	Agree	Strongly agree	Strongly agree	Agree
+666afb4cabd9b9230b916811	67ec034d511cef00e09e5155	Female		60+	United Kingdom	White / Caucasian		English	None	High school or below	Agree	Agree	Disagree	Agree	Disagree	Disagree	Agree	Agree	Disagree	Disagree
+6120d602c1976a4114dcb110	67ec02293cccaca61ec479ec	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Strongly agree	Disagree	Neutral	Neutral	Disagree	Neutral	Neutral	Agree	Agree	Agree
+615567110b3d6e418c6add32	67ec01cd417192d790e5002e	Male		25-34	United States	Hispanic		English	Christian	High school or below	Agree	Agree	Neutral	Agree	Agree	Agree	Agree	Agree	Agree	Agree
+667a9bdad0e1a943ee3d04bb	67ec0500c2cfd10eca3d1618	Male		25-34	United Kingdom	White / Caucasian		English	Christian	Undergraduate degree	Agree	Agree	Neutral	Agree	Neutral	Disagree	Neutral	Neutral	Agree	Agree
+6738e8674919d1c111aa48fe	67ec024933aeb6ccdca45565	Male		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Neutral	Agree	Neutral		Neutral	Agree	Neutral	Neutral	Agree	Neutral
+66e4ca06d1621d63704c83f9	67ec05793f10e12e36e56d63	Female		55-60	United States	White / Caucasian		English	Christian	Graduate degree	Strongly agree	Strongly agree	Strongly disagree	Neutral	Agree	Disagree	Strongly disagree	Strongly agree	Neutral	Strongly agree
+5b70758cf3dd6600010aa9eb	67ec05980ddacde03e41c95b	Female		60+	United Kingdom	White / Caucasian		English	None	High school or below	Strongly disagree	Agree	Strongly disagree	Strongly agree	Neutral	Strongly agree	Disagree	Strongly agree	Strongly disagree	Agree
+66e4ca06d1621d63704c83f9	67ec05793f10e12e36e56d63	Male		55-60	United States	White / Caucasian		English	Christian	Graduate degree	Strongly agree	Strongly agree	Strongly disagree	Neutral	Neutral	Neutral	Strongly disagree	Strongly agree	Neutral	Strongly agree
+669784d7b9b01c76a1131cb9	67ec0728fbf587183f181d87	Male		25-34	United States	White / Caucasian		English	Christian	Graduate degree	Strongly agree	Agree	Disagree	Strongly agree	Agree	Strongly agree	Neutral	Strongly agree	Disagree	Strongly agree
+6012e262527c380ccb2a6c74	67ec06b0b896bfc060af8cd2	Male		25-34	United States	White / Caucasian		English	Christian	Undergraduate degree	Strongly agree	Agree	Agree	Disagree	Strongly disagree	Strongly disagree	Disagree	Agree	Agree	Strongly agree
+676a674d7c3901f79b2a9d85	67ec057d2cb5459b4376c2d8	Male		25-34	United States	White / Caucasian		English	None	High school or below	Agree	Disagree	Neutral	Disagree	Neutral	Strongly disagree	Neutral	Agree	Agree	Agree
+6012e262527c380ccb2a6c74	67ec06b0b896bfc060af8cd2	Male		25-34	United States	White / Caucasian		English	Christian	Undergraduate degree	Strongly agree	Agree	Agree	Disagree	Strongly disagree	Strongly disagree	Disagree	Agree	Agree	Strongly agree
+58aca85e0da7f10001de92d4	67ec08b9b41324fedbf40f9d	Male		25-34	United Kingdom	White / Caucasian		English	Muslim	Graduate degree	Agree	Agree	Agree	Neutral	Neutral	Neutral	Agree	Agree	Agree	Agree
+6779c8fd10ec19bf89b5f9d8	67ec0da2dca9e9e6b327fae8	Female		18-24	United Kingdom;Pakistan	Asian / Pacific Islander		English	Muslim	Undergraduate degree	Strongly disagree	Agree	Strongly disagree	Agree	Agree	Agree	Neutral	Agree	Agree	Agree
+6779c8fd10ec19bf89b5f9d8	67ec0da2dca9e9e6b327fae8	Female		18-24	United Kingdom;Pakistan	Asian / Pacific Islander		English	Muslim	Undergraduate degree	Strongly disagree	Agree	Disagree	Agree	Agree	Agree	Agree	Agree	Agree	Agree
+test	test	Female		25-34	China	Black or African American		English	Jewish	Undergraduate degree	Neutral									
+6727ad0036c64ff97bee3b05	67ed33efbb83a4448b4ba41c	Female		25-34	United Kingdom	White / Caucasian		English	None	Graduate degree	Disagree	Agree	Agree	Disagree	Disagree	Neutral	Neutral	Neutral	Agree	Neutral
+67e55c2bb599048dff2b670e	67ed39c161d621a71f798207	Female		45-54	United States	Black or African American		English	Christian	Graduate degree	Agree	Agree	Disagree	Neutral	Neutral	Disagree	Strongly disagree	Neutral	Disagree	Strongly agree
+66de0fe631ea4b3facbc2d37	67ed3af9206d030c0e01da2c	Female		60+	United Kingdom	White / Caucasian		English	Christian	Undergraduate degree	Strongly agree	Neutral	Disagree	Disagree	Disagree	Disagree	Disagree	Agree	Agree	Neutral
+676e9234813dcfed6dd4d9fd	67ed4030144fc8c33c820fb6	Female		45-54	United Kingdom	White / Caucasian		English	Christian	High school or below	Strongly disagree	Agree	Disagree	Agree	Agree	Strongly agree	Disagree	Agree	Strongly disagree	Agree
+671231129faf9fee90df1396	67ed407eaa9e46b190e40f71	Female		25-34	United States	Black or African American		English	Christian	Undergraduate degree	Agree	Neutral	Disagree	Agree	Strongly agree	Agree	Strongly disagree	Agree	Neutral	Strongly agree
+5bef64b373e44f0001092811	67ed486b1c64e59cdfd11f81	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Agree	Strongly disagree	Strongly disagree	Disagree	Strongly disagree	Strongly disagree	Strongly agree	Neutral	Neutral	Agree
+5aa637861eda41000136d5d2	67ed466be4b77593f61ea5e5	Male		25-34	United States	Black or African American		English	None	High school or below	Strongly agree	Strongly disagree	Neutral	Agree	Strongly disagree	Strongly disagree	Neutral	Agree	Disagree	Strongly agree
+678ae33e9692623c5fcb16cb	67ed52354ba4b771dd718119	Male		35-44	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Strongly disagree	Neutral	Disagree	Agree	Agree	Agree	Strongly agree	Agree	Disagree	Strongly agree
+62db2644ab0a3a353c0dcb54	67ed562236e49abc581f05b4	Male		35-44	United Kingdom	White / Caucasian		English	None	Undergraduate degree	Neutral	Neutral	Disagree	Agree	Disagree	Agree	Disagree	Agree	Disagree	Neutral
+5fff0eb8fa9eac64dfee12f0	67ed566f6aeb6cf0cd7501a2	Female		25-34	United States	White / Caucasian		English	Other, please specify.	Undergraduate degree	Agree	Neutral	Strongly agree	Disagree	Strongly disagree	Disagree	Neutral	Disagree	Neutral	Strongly agree
+66c3262103f0333ce7b58f8c	67ed57022d435e4fcf8adb88	Male		18-24	United Kingdom	Asian / Pacific Islander		English	Muslim	Undergraduate degree	Agree	Neutral	Strongly disagree	Strongly agree	Strongly disagree	Neutral	Agree	Strongly agree	Neutral	Strongly agree
+5b421b9ac2e3810001763252	67ed5b715cdda4fd7e7837a3	Female		35-44	United Kingdom	White / Caucasian;Asian / Pacific Islander		English	None	Undergraduate degree	Agree	Agree	Disagree	Agree	Strongly disagree	Disagree	Disagree	Agree	Disagree	Agree
+66d7a4ca0fcf61aba9eb9328	67ed5e3008346522f5cda40d	Male		35-44		Black or African American		English	None	Graduate degree	Strongly agree	Agree	Strongly disagree	Strongly agree	Agree	Disagree	Strongly disagree	Strongly agree	Agree	Strongly agree
+672f38a8b06d76dc52673692	67ed686dbf503af38f9c40ce	Female		25-34	United Kingdom	Black or African American		English	Christian	Undergraduate degree	Strongly agree	Strongly agree	Neutral	Strongly agree	Neutral	Disagree	Agree	Agree	Agree	Agree
+6727ea3905ae5d0d2cb5180c	67ed6bc1d2fa0ea99b14134d	Female		35-44	United Kingdom	White / Caucasian		English	Christian	High school or below	Neutral	Agree	Disagree	Disagree	Agree	Agree	Neutral	Agree	Strongly agree	Neutral
+66bc59b005ccfffd6775fe9f	67ed72deafa2754687e49c6d	Female		25-34	United States	White / Caucasian		English	None	Undergraduate degree	Agree	Agree	Agree	Neutral	Strongly agree	Strongly disagree	Agree	Strongly agree	Strongly agree	Agree
