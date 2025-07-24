@@ -8,6 +8,8 @@ from datetime import datetime
 from google.oauth2 import service_account
 from shillelagh.backends.apsw.db import connect
 import random
+import sqlite3
+
 
 
 st.set_page_config(
@@ -22,9 +24,9 @@ st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)
 
 ANNOTATIONS_PER_ITEM = 3
 ANNOTATIONS_PER_PERSON = 50
-ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1ZJICABhy361FCbYYxWmPbpKMI7nI_Bs7DRn4Le83TwY/edit?usp=sharing"
-SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/1KBhebUEIc3Y6kaTH6cUzYaDrFslxDt9bLU35UUTDD6A/edit?usp=sharing"
-demographics_url = "https://docs.google.com/spreadsheets/d/1iDwU43J-8OPCnfg9D8l2fOu36OwGlG3eitqHQ1iX_iM/edit?usp=sharing"
+ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1VVZf3wtSYqxZkKzCdSk2iG_khdJTjCiSgW7lJPdISxQ/edit?gid=0#gid=0"
+SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/13sAE1CpqevnQPmcP_94sCugxWXjNsWlh3dVkh2qC4Ic/edit?gid=568110981#gid=568110981"
+demographics_url = "https://docs.google.com/spreadsheets/d/1874zHrrRyKL-ESbeeS4Xw7ito22fPqzaEqWfKMp8eHI/edit?gid=0#gid=0"
 
 
 # Create a connection object.
@@ -114,6 +116,9 @@ def annotate_response(dimensions, url):
             state.candidates.pop(0)
     st.session_state.is_submitting = False
     
+if "username" not in state:
+    state.username = ""
+    state.session_id = ""
 
 #state.username = st.text_input("Enter your state.username:")
 if 'PROLIFIC_PID' not in state:
@@ -122,8 +127,8 @@ if 'PROLIFIC_PID' not in state:
         state.username = url_params['PROLIFIC_PID']
         state.session_id = url_params['state.session_id']
     else:
-        state.username = 'test2'
-        state.session_id = 'test'
+        state.username = 'test1'
+        state.session_id ='test'
     state.prev_annotations = get_user_annotation_count(state.username)
     state.PROLIFIC_PID = True
 
