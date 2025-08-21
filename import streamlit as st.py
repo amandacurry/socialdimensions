@@ -8,10 +8,6 @@ from datetime import datetime
 from google.oauth2 import service_account
 from shillelagh.backends.apsw.db import connect
 import random
-import sqlite3
-from streamlit_scroll_to_top import scroll_to_here
-
-
 
 
 st.set_page_config(
@@ -26,9 +22,9 @@ st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)
 
 ANNOTATIONS_PER_ITEM = 3
 ANNOTATIONS_PER_PERSON = 50
-ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1VVZf3wtSYqxZkKzCdSk2iG_khdJTjCiSgW7lJPdISxQ/edit?gid=0#gid=0"
-SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/13sAE1CpqevnQPmcP_94sCugxWXjNsWlh3dVkh2qC4Ic/edit?gid=568110981#gid=568110981"
-demographics_url = "https://docs.google.com/spreadsheets/d/1874zHrrRyKL-ESbeeS4Xw7ito22fPqzaEqWfKMp8eHI/edit?gid=0#gid=0"
+ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1ZJICABhy361FCbYYxWmPbpKMI7nI_Bs7DRn4Le83TwY/edit?usp=sharing"
+SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/1KBhebUEIc3Y6kaTH6cUzYaDrFslxDt9bLU35UUTDD6A/edit?usp=sharing"
+demographics_url = []
 
 
 # Create a connection object.
@@ -55,45 +51,51 @@ def get_user_annotation_count(username):
     records = annotation_sheet.get_all_records()
     return sum(1 for r in records if r["annotator"] == username)
 
-@st.cache_data
 def get_items(username):
-    #st.write('Fetching items for:', username)
-    
+    st.write('test')
     data = annotation_sheet.get_all_records()
+    
+
     user_count = sum(1 for r in data if r.get("annotator") == username)
-    #st.write(f"User annotations so far: {user_count}")
+    st.write(user_count)
 
     if user_count >= ANNOTATIONS_PER_PERSON:
-        return []  # User reached max annotations
+        return None  # User reached max annotations
 
+    # Load all source data
     source_records = load_source_data()
 
-    # Count how many annotations each item has
+    # For each item, check how many annotations it has so far
     item_annotation_counts = {}
     for r in data:
         item_id = r.get("id")
         item_annotation_counts[item_id] = item_annotation_counts.get(item_id, 0) + 1
 
-    # Filter items that still need annotations
-    candidates = [row for row in source_records if item_annotation_counts.get(row["id"], 0) < ANNOTATIONS_PER_ITEM]
-    print(len(candidates))
-    # Exclude items already annotated by this user
+    # Find items that still need annotations
+    candidates = []
+    for row in source_records:
+        item_id = row.get("id")
+        needed = ANNOTATIONS_PER_ITEM
+        current = item_annotation_counts.get(item_id, 0)
+
+        if current < needed:
+            candidates.append(row)
+
+    # Optionally: exclude items the user has already annotated
     user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == username}
+    st.write(user_annotated_ids)
     candidates = [c for c in candidates if c.get("id") not in user_annotated_ids]
-    print(len(candidates))
 
     if not candidates:
-        return []  # No items left to annotate
+        return None  # No items left to annotate for this user
 
-    # Shuffle for randomness
+    # Pick one candidate fairly — e.g., the one with the least annotations so far
+    #candidates.sort(key=lambda c: item_annotation_counts.get(c.get("id"), 0))
     random.shuffle(candidates)
 
-    # Limit to remaining quota
-    remaining_quota = ANNOTATIONS_PER_PERSON - user_count
-    next_items = candidates[:remaining_quota]
+    next_item = candidates[:ANNOTATIONS_PER_PERSON-prev_annotations]
 
-    return next_items
-
+    return next_item
 
 
 
@@ -109,90 +111,45 @@ def save_annotation(item_id, username, annotation_text):
 
 
 def annotate_response(dimensions, url):
-    st.session_state.is_submitting = True
-    if st.session_state.is_submitting:
-        with st.spinner("Saving your annotation..."):
-            labels = [state.username, state.session_id, state.candidates[0]["id"]] + dimensions
-            write_to_file(labels, url)
-            state.row_index+=1
-            state.candidates.pop(0)
-    st.session_state.is_submitting = False
-    
-if "username" not in state:
-    state.username = ""
-    state.session_id = ""
+    labels = [username, session_id, state.candidates[state.row_index]["id"]] + dimensions
+    state.row_index+=1
+    #state.current_item = state.candidates[state.row_index]
+    write_to_file(labels, url)
 
-#state.username = st.text_input("Enter your state.username:")
+#username = st.text_input("Enter your username:")
 if 'PROLIFIC_PID' not in state:
     if st.query_params.to_dict():
         url_params = st.query_params.to_dict()
-        state.username = url_params['PROLIFIC_PID']
-        state.session_id = url_params['state.session_id']
+        username = url_params['PROLIFIC_PID']
+        session_id = url_params['SESSION_ID']
     else:
-        state.username = 'amanda'
-        state.session_id ='test'
-    state.prev_annotations = get_user_annotation_count(state.username)
-    state.PROLIFIC_PID = True
+        username = 'test1'
+        session_id = 'test'
+    prev_annotations = get_user_annotation_count(username)
 
-# Initialize state
-if "is_submitting" not in st.session_state:
-    st.session_state.is_submitting = False
+
 
 
 if 'INSTRUCTIONS_READ' not in state:
-    state.INSTRUCTIONS_READ = False
+    state.INSTRUCTIONS_READ = True
 if 'INSTRUCTIONS' not in state:
     state.INSTRUCTIONS = 0
 
 if "form_filled" not in state:
-    state.form_filled = False
+    state.form_filled = True
 
 if "candidates"  not in state:
-    #st.write('hello')
-    state.candidates = get_items(state.username)
+    st.write('hello')
+    state.candidates = get_items(username)
 
 if "row_index" not in state:
     state.row_index = 0
     #state.current_item = state.candidates[state.row_index]
 
-if state.prev_annotations>0:
+if prev_annotations>0:
     state.INSTRUCTIONS_READ = True
     state.form_filled = True
 
-# Initialize flag
-if "scroll_top" not in state:
-    state.scroll_top = False
-
-if state.scroll_top:
-    scroll_js = """
-    <script>
-    window.addEventListener('load', function() {
-        window.scrollTo(0,0);
-    });
-    </script>
-    """
-    st.components.v1.html(scroll_js, height=0)
-    # Reset flag so it doesn’t scroll on every rerun
-    st.session_state.scroll_top = False
-
-import streamlit as st
-from streamlit_scroll_to_top import scroll_to_here
-
-if 'scroll_to_top' not in st.session_state:
-    st.session_state.scroll_to_top = False
-    
-if 'scroll_to_header' not in st.session_state:
-    st.session_state.scroll_to_header = False
-
-if st.session_state.scroll_to_top:
-    scroll_to_here(0, key='top')  # Scroll to the top of the page
-    st.session_state.scroll_to_top = False  # Reset the state after scrolling
-
-def scroll():
-    st.session_state.scroll_to_top = True
-    
-def scrollheader():
-    st.session_state.scroll_to_header = True
 
 placeholder = st.empty()
 
@@ -223,171 +180,9 @@ if not state.INSTRUCTIONS_READ:
 
                 Let's look at each one more carefully.
                     ''')
-        st.button("Click here to continue.", on_click=lambda: (state.update(INSTRUCTIONS=1), state.update(scroll_to_top = True)))
+        st.button("Click here to continue.", on_click=lambda: state.update(INSTRUCTIONS=1))
 
-    if state.INSTRUCTIONS == 1:
-        st.write('''
-            # Annotation Guidelines for Social Dimensions
-            
-            ## 1. Knowledge  
-            **Definition:** Exchange of ideas or information; learning, teaching.  
-
-            **Indicators:**  
-            - Sharing facts, expertise, or explanations.  
-            - Teaching or instructing someone.  
-            - Asking or answering questions to gain understanding.  
-            - Providing references or sources to support learning.  
-
-            **Examples:**  
-            *"But if you're generally curious, I'm happy to explain a few of the things that aren't entirely accurate."*  
-            *"I'd recommend the first few times you do it using canned beer instead of bottled beer."*  
-              
-            ## 2. Power  
-            **Definition:** Having power over the behavior and outcomes of another.  
-
-            **Indicators:**  
-            - Commands, instructions, or authoritative statements.  
-            - Coercion, threats, or control over decisions.  
-            - Expressing dominance or hierarchical superiority.  
-            - Enforcement of rules or consequences.  
-
-            **Examples:**  
-            *"You must submit your report by noon, or there will be consequences."*  
-            *"Your job is to take objectives But we can't actually **do** that right now."*  
-
-            ---
-
-            ## 3. Status  
-            **Definition:** Conferring status, appreciation, gratitude, or admiration upon another.  
-
-            **Indicators:**  
-            - Compliments, praise, or recognition.  
-            - Assigning prestige, rank, or superiority.  
-            - Expressing admiration or gratitude.  
-            - Indicating social hierarchy or reputation.  
-
-            **Examples:**  
-            *"You did an amazing job on this project!"*  
-            *"Thank you for teaching me a new word this morning."*  
-
-                 ''')
-        st.button("Next", on_click=lambda: (state.update(INSTRUCTIONS=2), state.update(scroll_to_top = True)))
-
-    if state.INSTRUCTIONS == 2:
-        st.write('''
-            # Annotation Guidelines for Social Dimensions
-            ## 4. Trust  
-            **Definition:** Willingness to rely on the actions or judgments of another.  
-
-            **Indicators:**  
-            - Expressing confidence in someone's reliability or decisions.  
-            - Seeking reassurance or demonstrating belief in another's integrity.  
-            - Statements of dependence or faith in someone's actions.  
-
-            **Examples:**  
-            *"I know I can count on you to handle this."*  
-            *"I trust your judgment—go ahead with the plan."*  
-
-            ---
-
-            ## 5. Support  
-            **Definition:** Giving emotional or practical aid and companionship.  
-
-            **Indicators:**  
-            - Offering help, encouragement, or comfort.  
-            - Expressing care, concern, or empathy.  
-            - Providing assistance or resources for well-being.  
-
-            **Examples:**  
-            *"This is not the advice you've come for, but I think you need some *you* time."*  
-            *"Your family has my condolences, for what little it's worth."*  
-
-            ---
-
- 
-
-                 ''')
-        st.button("More", on_click=lambda: (state.update(INSTRUCTIONS=3), state.update(scroll_to_top = True)))
-
-    if state.INSTRUCTIONS == 3:
-        st.write('''
-            # Annotation Guidelines for Social Dimensions
-            ## 6. Similarity  
-            **Definition:** Shared interests, motivations, or outlooks.  
-
-            **Indicators:**  
-            - Emphasizing commonalities in beliefs, experiences, or goals.  
-            - Aligning with someone's perspective or background.  
-            - Expressing unity based on shared attributes.  
-
-            **Examples:**  
-            *"We both grew up in the same town—no wonder we get along!"*  
-            *"I totally agree with your views on this topic."*  
-
-            ---
-
-            ## 7. Identity  
-            **Definition:** Shared sense of belonging to the same community or group.  
-
-            **Indicators:**  
-            - Reference to group membership, culture, or collective identity.  
-            - Statements reinforcing inclusion or exclusion.  
-            - Discussing traditions, heritage, or community belonging.  
-
-            **Examples:**  
-            *"As fellow artists, we understand the struggle of finding inspiration."*  
-            *"But what really set us apart and made our community unique was your contribution."*  
-
-            ---
-
-            ## 8. Fun  
-            **Definition:** Experiencing leisure, laughter, and joy.  
-
-            **Indicators:**  
-            - Jokes, humor, or playful teasing.  
-            - References to entertainment, hobbies, or games.  
-            - Lighthearted and enjoyable interactions.  
-
-            **Examples:**  
-            *"Hahaha that's hilarious, and i feel you."*  
-            *"Haha, you gave me and my girlfriend a good laugh at that haha."*  
-
-            ---
-
-            ## 9. Conflict  
-            **Definition:** Contrast or diverging views.  
-
-            **Indicators:**  
-            - Disagreements, arguments, or criticism.  
-            - Expressions of frustration, opposition, or hostility.  
-            - Differences in opinions leading to tension.  
-
-            **Examples:**  
-            *"He's not some wildly popular player and your ignorance is showing."*  
-            *"Because you're telling me that you literally don't care that you believe false things."*  
- 
-
-                 ''')
-        st.button("And finally...", on_click=lambda: (state.update(INSTRUCTIONS=4), state.update(scroll_to_top = True)))
-
-    if state.INSTRUCTIONS == 4:
-        st.write('''
-            # Annotation Guidelines for Social Dimensions
-            
-            ## General Annotation Rules  
-            - **Consider Context:** Some statements may seem neutral but imply deeper relational dimensions.  
-            - **Apply Multiple Labels When Necessary:** If an interaction contains elements of multiple dimensions, assign all relevant labels.  
-            - **Avoid Overgeneralization:** Focus on the specific intent and effect of the statement rather than assuming based on general tone.  
-            - **Disregard Sarcasm Unless Clear:** If sarcasm is ambiguous, label based on literal meaning. 
-                 
-            ## App-specific:
-            - Use your mouse where possible.
-            - Use tab to move between fields, enter will try to submit the form.
-            - If you have an error, first try "Re-run" in the top right corner (click on the three dots).
-            - If that doesn't work, please contact us.
-
-                 ''')
-        st.button("I have read the instructions", on_click=lambda: (state.update(INSTRUCTIONS_READ=True), state.update(scroll_to_top = True)))
+        st.button("I have read the instructions", on_click=lambda: state.update(INSTRUCTIONS_READ=True))
         
 
 
@@ -481,20 +276,19 @@ if state.INSTRUCTIONS_READ:
                     big5 = [big_1, big_2, big_3, big_4, big_5, big_6, big_7, big_8, big_9, big_10]
 
 
-                    row = [state.username, state.session_id] + demographic_information + big5
+                    row = [username, session_id] + demographic_information + big5
                     if all_valid:
                         write_to_file(row, demographics_url)
+                    
                         state.form_filled = True
-                        state.update(scroll_to_top = True)
-                        st.rerun()
 
 
 
-    if state.form_filled and state.row_index+state.prev_annotations<ANNOTATIONS_PER_PERSON:
-        #st.write('index', state.row_index)
+    if state.form_filled and state.row_index+prev_annotations<ANNOTATIONS_PER_PERSON:
+
         with st.form("annotation_form"):
-            st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
-            st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
+            st.subheader(f"Utterance {1+state.row_index+prev_annotations} of {ANNOTATIONS_PER_PERSON}")
+            st.write("Please read the following utterance and select the dimensions that you think are present in the section in **bold**. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
             text = state.candidates[state.row_index]['text']
 
@@ -517,11 +311,11 @@ if state.INSTRUCTIONS_READ:
                 unsafe_allow_html=True
             )
 
-            st.write("Which of the following social dimensions apply to this text?")
+            st.write("Which of the following social dimensions apply to the section in **bold**?")
             
             state.run = state.row_index  # keep for unique keys
+            romance = st.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship', key=f'rom_{state.run}')  
             fun = st.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key=f'fun_{state.run}')
-            romance = st.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship, flirting. It does not include general discussion around sex and sexuality.', key=f'rom_{state.run}')  
             trust = st.checkbox('**Trust**: Will of relying on the actions or judgments of another', key=f'trust_{state.run}')  
             support = st.checkbox('**Support**: Giving emotional or practical aid and companionship', key=f'supp_{state.run}')  
             similarity = st.checkbox('**Similarity**: Shared interests, motivations or outlooks', key=f'sim_{state.run}')  
@@ -538,11 +332,10 @@ if state.INSTRUCTIONS_READ:
             submitted = st.form_submit_button("Submit")
 
             if submitted:
-                state.update(scroll_to_top = True)
-                dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none, romance]
+                dimensions = [knowledge, power, status, trust, support, similarity, identity, fun, conflict, other, other_sp, none]
                 
                 # Validation
-                if none and (knowledge or power or status or trust or support or similarity or identity or fun or conflict or romance):
+                if none and (knowledge or power or status or trust or support or similarity or identity or fun or conflict):
                     st.warning("Please select either 'None of the above' or one of the dimensions.")
                 elif other and not other_sp:
                     st.warning("Please specify the other dimension.")
@@ -550,15 +343,8 @@ if state.INSTRUCTIONS_READ:
                     annotate_response(dimensions, ANNOTATION_SHEET)
                     #st.success("Annotation submitted!")
                     st.rerun()  # Load next item automatically
-                else:
-                    st.warning("Please select at least one option.")
-                
-
-
     
-    elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
+    elif state.form_filled and state.row_index+prev_annotations>=ANNOTATIONS_PER_PERSON:
         st.subheader("Thank you!")
         placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
-
- 
 
