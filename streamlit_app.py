@@ -212,11 +212,11 @@ if not state.INSTRUCTIONS_READ:
                 3. **Status**: Conferring status, appreciation, gratitude, or admiration upon another.
                 4. **Trust**: Will of relying on the actions or judgments of another.
                 5. **Support**: Giving emotional or practical aid and companionship.
-                6. **Romance**: Intimacy among people with a sentimental or sexual relationship.
-                7. **Similarity**: Shared interests, motivations or outlooks.
-                8. **Identity**: Shared sense of belonging to the same community or group.
-                9. **Fun**: Experiencing leisure, laughter, and joy.
-                10. **Conflict**: Contrast or diverging views.
+                6. **Similarity**: Shared interests, motivations or outlooks.
+                7. **Identity**: Shared sense of belonging to the same community or group.
+                8. **Fun**: Experiencing leisure, laughter, and joy.
+                9. **Conflict**: Contrast or diverging views.
+                10. **Romance**: Intimacy among people with a sentimental or sexual relationship.
                     
                 In this task, we want to understand which of these relationships are evident in a piece of text, with the exception of **Romance**.
                 Each annotation should categorize interactions or relationships into one or more of the following dimensions. Annotators should consider the context, intent, and content of the text when assigning labels. If an interaction fits multiple dimensions, multiple labels may be applied.
@@ -304,14 +304,6 @@ if not state.INSTRUCTIONS_READ:
 
             ---
 
- 
-
-                 ''')
-        st.button("More", on_click=lambda: (state.update(INSTRUCTIONS=3), state.update(scroll_to_top = True)))
-
-    if state.INSTRUCTIONS == 3:
-        st.write('''
-            # Annotation Guidelines for Social Dimensions
             ## 6. Similarity  
             **Definition:** Shared interests, motivations, or outlooks.  
 
@@ -323,8 +315,16 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"We both grew up in the same town—no wonder we get along!"*  
             *"I totally agree with your views on this topic."*  
+ 
 
-            ---
+                 ''')
+        st.button("More", on_click=lambda: (state.update(INSTRUCTIONS=3), state.update(scroll_to_top = True)))
+
+    if state.INSTRUCTIONS == 3:
+        st.write('''
+            # Annotation Guidelines for Social Dimensions
+
+
 
             ## 7. Identity  
             **Definition:** Shared sense of belonging to the same community or group.  
@@ -365,7 +365,25 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"He's not some wildly popular player and your ignorance is showing."*  
             *"Because you're telling me that you literally don't care that you believe false things."*  
- 
+        
+            ---
+                 
+           ## 10. Romance
+
+            **Definition:** Flirting, expressions of affection, attraction, or intimacy, often signaling closeness or love between individuals. It is *not* comments about sex.
+
+            **Indicators:**
+
+            Declarations of love, admiration, or desire.
+
+            Compliments on appearance, personality, or compatibility.
+
+            References to relationships, dating, or emotional intimacy.
+
+            **Examples:**
+            "I think about you all the time, you make my days brighter."
+            "You two are such a cute couple, it’s obvious how much you care for each other."
+                
 
                  ''')
         st.button("And finally...", on_click=lambda: (state.update(INSTRUCTIONS=4), state.update(scroll_to_top = True)))
