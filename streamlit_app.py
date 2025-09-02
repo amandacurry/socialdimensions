@@ -526,6 +526,8 @@ if state.INSTRUCTIONS_READ:
                         display: block;
                         margin: 20px;
                         font-size: 18px;
+                        white-space: pre-wrap; /* <-- this preserves newlines */
+                        word-wrap: break-word;
                     }}
                 </style>
                 <div class="highlight">
