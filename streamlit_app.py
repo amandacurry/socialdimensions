@@ -24,7 +24,7 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
-ANNOTATIONS_PER_ITEM = 3
+ANNOTATIONS_PER_ITEM = 5
 ANNOTATIONS_PER_PERSON = 50
 ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1VVZf3wtSYqxZkKzCdSk2iG_khdJTjCiSgW7lJPdISxQ/edit?gid=0#gid=0"
 SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/13sAE1CpqevnQPmcP_94sCugxWXjNsWlh3dVkh2qC4Ic/edit?gid=568110981#gid=568110981"
