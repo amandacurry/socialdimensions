@@ -127,7 +127,7 @@ if 'PROLIFIC_PID' not in state:
     if st.query_params.to_dict():
         url_params = st.query_params.to_dict()
         state.username = url_params['PROLIFIC_PID']
-        state.session_id = url_params['state.session_id']
+        state.session_id = url_params['SESSION_ID']
     else:
         state.username = 'amanda'
         state.session_id ='test'
