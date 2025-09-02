@@ -576,7 +576,7 @@ if state.INSTRUCTIONS_READ:
     
     elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
+        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **CBN3YT5G**")
 
  
 
