@@ -514,7 +514,7 @@ if state.INSTRUCTIONS_READ:
             st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
             st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
-            text = state.candidates[state.row_index]['text']
+            text = state.candidates[state.row_index]['text'].replace("\n", "<br>")
 
             st.markdown(
                 f"""
