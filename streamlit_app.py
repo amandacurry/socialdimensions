@@ -729,6 +729,7 @@ if state.INSTRUCTIONS_READ:
                 <style>
                     .highlight {{
                         background-color: whitesmoke;
+                        color: black;
                         padding: 10px;
                         border-radius: 5px;
                         display: block;
