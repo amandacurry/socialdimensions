@@ -26,7 +26,7 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
-ANNOTATIONS_PER_ITEM = 3
+ANNOTATIONS_PER_ITEM = 5
 ANNOTATIONS_PER_PERSON = 50
 
 
@@ -722,7 +722,7 @@ if state.INSTRUCTIONS_READ:
             st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
             st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
-            text = state.candidates[state.row_index]['text']
+            text = state.candidates[state.row_index]['text'].replace("\n", "<br>")
 
             st.markdown(
                 f"""
@@ -734,6 +734,8 @@ if state.INSTRUCTIONS_READ:
                         display: block;
                         margin: 20px;
                         font-size: 18px;
+                        white-space: pre-wrap; /* <-- this preserves newlines */
+                        word-wrap: break-word;
                     }}
                 </style>
                 <div class="highlight">
@@ -784,7 +786,7 @@ if state.INSTRUCTIONS_READ:
     
     elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
+        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **CBN3YT5G**")
 
  
 
