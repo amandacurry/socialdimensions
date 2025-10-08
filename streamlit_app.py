@@ -10,6 +10,8 @@ from shillelagh.backends.apsw.db import connect
 import random
 import sqlite3
 from streamlit_scroll_to_top import scroll_to_here
+import sqlite3
+import uuid  # or you could use integers if you prefer
 
 
 
@@ -26,59 +28,199 @@ st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)
 
 ANNOTATIONS_PER_ITEM = 3
 ANNOTATIONS_PER_PERSON = 50
-ANNOTATION_SHEET = "https://docs.google.com/spreadsheets/d/1VVZf3wtSYqxZkKzCdSk2iG_khdJTjCiSgW7lJPdISxQ/edit?gid=0#gid=0"
-SOURCE_SHEET = "https://docs.google.com/spreadsheets/d/13sAE1CpqevnQPmcP_94sCugxWXjNsWlh3dVkh2qC4Ic/edit?gid=568110981#gid=568110981"
-demographics_url = "https://docs.google.com/spreadsheets/d/1874zHrrRyKL-ESbeeS4Xw7ito22fPqzaEqWfKMp8eHI/edit?gid=0#gid=0"
 
 
-# Create a connection object.
-conn = st.connection("gsheets", type=GSheetsConnection)
-credentials = service_account.Credentials.from_service_account_info(
-            st.secrets['connections']['gsheets'], 
-            scopes=["https://www.googleapis.com/auth/spreadsheets",],)
-
-client=gspread.authorize(credentials)
+DB_NAME = "annotations.db"
+DATA_TABLE = 'stimuli'
+ANNOTATIONS_TABLE = 'annotations'
+DEMOGRAPHICS_TABLE = 'demographics'
 
 
 
-annotation_sheet = client.open_by_url(ANNOTATION_SHEET).sheet1
-
-source_sheet = client.open_by_url(SOURCE_SHEET).sheet1 
 
 state = st.session_state
 
+import sqlite3
+import os
+
+DB_NAME = "annotations.db"
+csv_file = "small_sample_annotations - small_sample_annotations.csv"   # <-- change to your actual CSV
+
+
+def initialize_database(db_name=DB_NAME):
+    """
+    Checks if the SQLite database exists. If not, creates it and sets up three tables:
+    - stimuli
+    - demographics
+    - annotations
+    """
+    # Check if the database file exists
+    db_exists = os.path.exists(db_name)
+
+    if db_exists:
+        print(f"✅ Database '{db_name}' already exists.")
+        return  # nothing to do
+
+    # Connect (this creates the file)
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    # Create table: stimuli
+    cursor.execute("""
+    CREATE TABLE stimuli (
+        new_id TEXT PRIMARY KEY,
+        row_id INTEGER,
+        author TEXT,
+        subreddit TEXT,
+        id TEXT,
+        text TEXT,
+        dataset TEXT,
+        video_id TEXT,
+        reply_date TEXT,
+        category TEXT
+    );
+    """)
+    # Load CSV into stimuli
+    if os.path.exists(csv_file):
+        df = pd.read_csv(csv_file)
+        df["new_id"] = [str(uuid.uuid4()) for _ in range(len(df))]  # generates a unique UUID for each row
+        df.to_sql("stimuli", conn, if_exists="append", index=False)
+        print(f"✅ Loaded CSV '{csv_file}' into 'stimuli' table.")
+    else:
+        print(f"⚠️ CSV file '{csv_file}' not found — 'stimuli' table is empty.")
+
+    # Create table: demographics
+    cursor.execute("""
+    CREATE TABLE demographics (
+        prolific_id TEXT PRIMARY KEY,
+        session_id TEXT,
+        gender TEXT,
+        gender_other TEXT,
+        age TEXT,
+        nationality TEXT,      -- semicolon-separated
+        ethnicity TEXT,        -- semicolon-separated
+        ethn_free TEXT,
+        language TEXT,         -- semicolon-separated
+        religion TEXT,
+        education TEXT,
+        big_1 TEXT,
+        big_2 TEXT,
+        big_3 TEXT,
+        big_4 TEXT,
+        big_5 TEXT,
+        big_6 TEXT,
+        big_7 TEXT,
+        big_8 TEXT,
+        big_9 TEXT,
+        big_10 TEXT
+        );
+    """)
+
+    # Create table: annotations
+    cursor.execute("""
+    CREATE TABLE annotations (
+        annotation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        prolific_id TEXT,
+        session_id TEXT,
+        candidate_id TEXT,
+        knowledge TEXT,
+        power TEXT,
+        status TEXT,
+        trust TEXT,
+        support TEXT,
+        similarity TEXT,
+        identity TEXT,
+        fun TEXT,
+        conflict TEXT,
+        other TEXT,
+        other_sp TEXT,
+        none TEXT,
+        romance TEXT
+    );
+    """)
+
+    conn.commit()
+    conn.close()
+    print(f"✅ Database '{db_name}' created with tables: stimuli, demographics, annotations.")
+
+# --- Call the initializer ---
+initialize_database()
+
+
 @st.cache_data(ttl=1200)  # refresh every 60 seconds
 def load_source_data():
-    return source_sheet.get_all_records()
+    conn = sqlite3.connect(DB_NAME)
+    stimuli = pd.read_sql(f"SELECT * FROM stimuli", conn)
+    conn.close()
+    return stimuli
 
-def get_user_annotation_count(username):
-    records = annotation_sheet.get_all_records()
-    return sum(1 for r in records if r["annotator"] == username)
+def load_annotated_data():
+    conn = sqlite3.connect(DB_NAME)
+    stimuli = pd.read_sql(f"SELECT * FROM annotations", conn)
+    conn.close()
+    return stimuli
+
+
+def get_user_annotation_count(prolific_id):
+    """
+    Returns the number of annotations made by a specific user.
+
+    Args:
+        prolific_id (str): The user's Prolific ID.
+
+    Returns:
+        int: The number of annotations found for that user.
+    """
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM annotations WHERE prolific_id = ?", (prolific_id,))
+    count = cursor.fetchone()[0]
+
+    conn.close()
+    return count
+
 
 @st.cache_data
-def get_items(username):
+def get_items(prolific_id):
     #st.write('Fetching items for:', username)
+    print("GETTING ITEMS")
+    data = load_annotated_data() #annotation_sheet.get_all_records()
     
-    data = annotation_sheet.get_all_records()
-    user_count = sum(1 for r in data if r.get("annotator") == username)
+    user_count = get_user_annotation_count(prolific_id)
+    print(user_count)
     #st.write(f"User annotations so far: {user_count}")
 
     if user_count >= ANNOTATIONS_PER_PERSON:
         return []  # User reached max annotations
 
     source_records = load_source_data()
+    print(source_records)
 
     # Count how many annotations each item has
     item_annotation_counts = {}
-    for r in data:
-        item_id = r.get("id")
-        item_annotation_counts[item_id] = item_annotation_counts.get(item_id, 0) + 1
+    for _, row in data.iterrows():  # iterate row by row
+        item_id = row["id"]         # access the 'id' column
+        item_annotation_counts[item_id] += 1
 
+    print(row for row in source_records)
     # Filter items that still need annotations
-    candidates = [row for row in source_records if item_annotation_counts.get(row["id"], 0) < ANNOTATIONS_PER_ITEM]
-    print(len(candidates))
+    #candidates = [row for row in source_records if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM]
+    candidates = [
+        row for _, row in source_records.iterrows()
+        if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM
+    ]
+    print('candidates', len(candidates))
+    print(candidates)
+
     # Exclude items already annotated by this user
-    user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == username}
+    #user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == prolific_id}
+    user_annotated_ids = {
+        row["id"]
+        for _, row in data.iterrows()
+        if row["annotator"] == prolific_id
+    }
+
     candidates = [c for c in candidates if c.get("id") not in user_annotated_ids]
     print(len(candidates))
 
@@ -99,23 +241,89 @@ def get_items(username):
 
 countries = ['United States', 'United Kingdom', 'China', 'Canada', 'United Arab Emirates', 'Australia', 'Andorra', 'Afghanistan', 'Antigua and Barbuda', 'Anguilla', 'Albania', 'Armenia', 'Angola', 'Antarctica', 'Argentina', 'American Samoa', 'Austria', 'Aruba', 'Azerbaijan', 'Bosnia and Herzegovina', 'Barbados', 'Bangladesh', 'Belgium', 'Burkina Faso', 'Bulgaria', 'Bahrain', 'Burundi', 'Benin', 'Saint Barthelemy', 'Bermuda', 'Brunei', 'Bolivia', 'Brazil', 'Bahamas, The', 'Bhutan', 'Bouvet Island', 'Botswana', 'Belarus', 'Belize', 'Cocos (Keeling) Islands', 'Congo, Democratic Republic of the', 'Central African Republic', 'Congo, Republic of the', 'Switzerland', 'Cote d\'Ivoire', 'Cook Islands', 'Chile', 'Cameroon', 'Colombia', 'Costa Rica', 'Cuba', 'Cape Verde', 'Curacao', 'Christmas Island', 'Cyprus', 'Czech Republic', 'Germany', 'Djibouti', 'Denmark', 'Dominica', 'Dominican Republic', 'Algeria', 'Ecuador', 'Estonia', 'Egypt', 'Western Sahara', 'Eritrea', 'Spain', 'Ethiopia', 'Finland', 'Fiji', 'Falkland Islands (Islas Malvinas)', 'Micronesia, Federated States of', 'Faroe Islands', 'France', 'France, Metropolitan', 'Gabon', 'Grenada', 'Georgia', 'French Guiana', 'Guernsey', 'Ghana', 'Gibraltar', 'Greenland', 'Gambia, The', 'Guinea', 'Guadeloupe', 'Equatorial Guinea', 'Greece', 'South Georgia and the Islands', 'Guatemala', 'Guam', 'Guinea-Bissau', 'Guyana', 'Hong Kong (SAR China)', 'Heard Island and McDonald Islands', 'Honduras', 'Croatia', 'Haiti', 'Hungary', 'Indonesia', 'Ireland', 'Israel', 'Isle of Man', 'India', 'British Indian Ocean Territory', 'Iraq', 'Iran', 'Iceland', 'Italy', 'Jersey', 'Jamaica', 'Jordan', 'Japan', 'Kenya', 'Kyrgyzstan', 'Cambodia', 'Kiribati', 'Comoros', 'Saint Kitts and Nevis', 'Korea, South', 'Kuwait', 'Cayman Islands', 'Kazakhstan', 'Laos', 'Lebanon', 'Saint Lucia', 'Liechtenstein', 'Sri Lanka', 'Liberia', 'Lesotho', 'Lithuania', 'Luxembourg', 'Latvia', 'Libya', 'Morocco', 'Monaco', 'Moldova', 'Montenegro', 'Saint Martin', 'Madagascar', 'Marshall Islands', 'Macedonia', 'Mali', 'Burma', 'Mongolia', 'Macau (SAR China)', 'Northern Mariana Islands', 'Martinique', 'Mauritania', 'Montserrat', 'Malta', 'Mauritius', 'Maldives', 'Malawi', 'Mexico', 'Malaysia', 'Mozambique', 'Namibia', 'New Caledonia', 'Niger', 'Norfolk Island', 'Nigeria', 'Nicaragua', 'Netherlands', 'Norway', 'Nepal', 'Nauru', 'Niue', 'New Zealand', 'Oman', 'Panama', 'Peru', 'French Polynesia', 'Papua New Guinea', 'Philippines', 'Pakistan', 'Poland', 'Saint Pierre and Miquelon', 'Pitcairn Islands', 'Puerto Rico', 'Gaza Strip', 'West Bank', 'Portugal', 'Palau', 'Paraguay', 'Qatar', 'Reunion', 'Romania', 'Serbia', 'Russia', 'Rwanda', 'Saudi Arabia', 'Solomon Islands', 'Seychelles', 'Sudan', 'Sweden', 'Singapore', 'Saint Helena, Ascension, and Tristan da Cunha', 'Slovenia', 'Svalbard', 'Slovakia', 'Sierra Leone', 'San Marino', 'Senegal', 'Somalia', 'Suriname', 'South Sudan', 'Sao Tome and Principe', 'El Salvador', 'Sint Maarten', 'Syria', 'Swaziland', 'Turks and Caicos Islands', 'Chad', 'French Southern and Antarctic Lands', 'Togo', 'Thailand', 'Tajikistan', 'Tokelau', 'Timor-Leste', 'Turkmenistan', 'Tunisia', 'Tonga', 'Turkey', 'Trinidad and Tobago', 'Tuvalu', 'Taiwan, Province of China', 'Tanzania', 'Ukraine', 'Uganda', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Holy See (Vatican City)', 'Saint Vincent and the Grenadines', 'Venezuela', 'British Virgin Islands', 'Virgin Islands', 'Vietnam', 'Vanuatu', 'Wallis and Futuna', 'Samoa', 'Kosovo', 'Yemen', 'Mayotte', 'South Africa', 'Zambia', 'Zimbabwe']
 
-def write_to_file(row, sheet_url):
-    #sheet_url = collected_url #st.secrets["private_gsheets_url"] #this information should be included in streamlit secret
-    sheet = client.open_by_url(sheet_url).sheet1
-    sheet.append_row(row, table_range="A1") 
+def write_to_db(row, table_name="annotations"):
+    """
+    Appends a row of data to the given SQLite table.
 
-def save_annotation(item_id, username, annotation_text):
-    annotation_sheet.append_row([username, item_id, annotation_text])
+    Args:
+        row (list or tuple): The values to insert, in the same order as the table columns.
+        table_name (str): The name of the table (default: 'annotations').
+    """
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    # Get table column names (excluding SQLite's internal fields)
+    cursor.execute(f"PRAGMA table_info({table_name});")
+    columns = [info[1] for info in cursor.fetchall()]
+    
+    if len(row) != len(columns):
+        raise ValueError(f"Row length ({len(row)}) does not match number of columns in {table_name} ({len(columns)})")
+
+    placeholders = ", ".join(["?"] * len(row))
+    query = f"INSERT INTO {table_name} VALUES ({placeholders})"
+
+    cursor.execute(query, row)
+    conn.commit()
+    conn.close()
+
+    print(f"✅ Row added to '{table_name}' table.")
+
 
 
 def annotate_response(dimensions, url):
+    """
+    Annotate the current candidate and save to the database.
+    
+    dimensions: list of annotation values corresponding to the table columns 
+                (excluding prolific_id, session_id, and new_id)
+    """
     st.session_state.is_submitting = True
-    if st.session_state.is_submitting:
+
+    if st.session_state.is_submitting and st.session_state.candidates:
         with st.spinner("Saving your annotation..."):
-            labels = [state.username, state.session_id, state.candidates[0]["id"]] + dimensions
-            write_to_file(labels, url)
-            state.row_index+=1
-            state.candidates.pop(0)
+            candidate = st.session_state.candidates[0]
+
+            # Build row in the correct order
+            row_values = [
+                st.session_state.username,
+                st.session_state.session_id,
+                candidate["new_id"]
+            ] + dimensions  # total 16 values
+
+            # Explicit column list (exclude AUTOINCREMENT annotation_id)
+            columns = [
+                "prolific_id",
+                "session_id",
+                "candidate_id",
+                "knowledge",
+                "power",
+                "status",
+                "trust",
+                "support",
+                "similarity",
+                "identity",
+                "fun",
+                "conflict",
+                "other",
+                "other_sp",
+                "none",
+                "romance"
+            ]
+
+            placeholders = ", ".join(["?"] * len(columns))
+
+            # Insert directly into SQLite
+            conn = sqlite3.connect(DB_NAME)
+            cursor = conn.cursor()
+            query = f"INSERT INTO annotations ({', '.join(columns)}) VALUES ({placeholders})"
+            cursor.execute(query, row_values)
+            conn.commit()
+            conn.close()
+
+            # Move to the next candidate
+            st.session_state.row_index += 1
+            st.session_state.candidates.pop(0)
+
     st.session_state.is_submitting = False
     
 if "username" not in state:
@@ -127,7 +335,7 @@ if 'PROLIFIC_PID' not in state:
     if st.query_params.to_dict():
         url_params = st.query_params.to_dict()
         state.username = url_params['PROLIFIC_PID']
-        state.session_id = url_params['state.session_id']
+        state.session_id = url_params['SESSION_ID']
     else:
         state.username = 'amanda'
         state.session_id ='test'
@@ -175,8 +383,6 @@ if state.scroll_top:
     # Reset flag so it doesn’t scroll on every rerun
     st.session_state.scroll_top = False
 
-import streamlit as st
-from streamlit_scroll_to_top import scroll_to_here
 
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
@@ -241,6 +447,8 @@ if not state.INSTRUCTIONS_READ:
             **Examples:**  
             *"But if you're generally curious, I'm happy to explain a few of the things that aren't entirely accurate."*  
             *"I'd recommend the first few times you do it using canned beer instead of bottled beer."*  
+            
+            ---
               
             ## 2. Power  
             **Definition:** Having power over the behavior and outcomes of another.  
@@ -501,7 +709,7 @@ if state.INSTRUCTIONS_READ:
 
                     row = [state.username, state.session_id] + demographic_information + big5
                     if all_valid:
-                        write_to_file(row, demographics_url)
+                        write_to_db(row, DEMOGRAPHICS_TABLE)
                         state.form_filled = True
                         state.update(scroll_to_top = True)
                         st.rerun()
@@ -565,7 +773,7 @@ if state.INSTRUCTIONS_READ:
                 elif other and not other_sp:
                     st.warning("Please specify the other dimension.")
                 elif any(dimensions):  # At least one selected
-                    annotate_response(dimensions, ANNOTATION_SHEET)
+                    annotate_response(dimensions, ANNOTATIONS_TABLE)
                     #st.success("Annotation submitted!")
                     st.rerun()  # Load next item automatically
                 else:
