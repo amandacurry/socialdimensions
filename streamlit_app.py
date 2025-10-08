@@ -12,6 +12,7 @@ import sqlite3
 from streamlit_scroll_to_top import scroll_to_here
 import sqlite3
 import uuid  # or you could use integers if you prefer
+from collections import defaultdict
 
 
 
@@ -198,7 +199,7 @@ def get_items(prolific_id):
     print(source_records)
 
     # Count how many annotations each item has
-    item_annotation_counts = {}
+    item_annotation_counts = defaultdict(int)
     for _, row in data.iterrows():  # iterate row by row
         item_id = row["candidate_id"]         # access the 'id' column
         item_annotation_counts[item_id] += 1
