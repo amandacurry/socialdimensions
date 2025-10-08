@@ -196,7 +196,7 @@ def get_items(prolific_id):
         return []  # User reached max annotations
 
     source_records = load_source_data()
-    print(source_records)
+    #print(source_records)
 
     # Count how many annotations each item has
     item_annotation_counts = defaultdict(int)
@@ -204,7 +204,7 @@ def get_items(prolific_id):
         item_id = row["candidate_id"]         # access the 'id' column
         item_annotation_counts[item_id] += 1
 
-    print(row for row in source_records)
+    #print(row for row in source_records)
     # Filter items that still need annotations
     #candidates = [row for row in source_records if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM]
     candidates = [
@@ -212,7 +212,7 @@ def get_items(prolific_id):
         if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM
     ]
     print('candidates', len(candidates))
-    print(candidates)
+    #print(candidates)
 
     # Exclude items already annotated by this user
     #user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == prolific_id}
