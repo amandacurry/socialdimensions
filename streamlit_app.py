@@ -200,7 +200,7 @@ def get_items(prolific_id):
     # Count how many annotations each item has
     item_annotation_counts = {}
     for _, row in data.iterrows():  # iterate row by row
-        item_id = row["id"]         # access the 'id' column
+        item_id = row["candidate_id"]         # access the 'id' column
         item_annotation_counts[item_id] += 1
 
     print(row for row in source_records)
