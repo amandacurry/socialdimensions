@@ -217,7 +217,7 @@ def get_items(prolific_id):
     # Exclude items already annotated by this user
     #user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == prolific_id}
     user_annotated_ids = {
-        row["id"]
+        row["candidate_id"]
         for _, row in data.iterrows()
         if row["prolific_id"] == prolific_id
     }
