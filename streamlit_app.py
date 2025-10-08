@@ -219,7 +219,7 @@ def get_items(prolific_id):
     user_annotated_ids = {
         row["id"]
         for _, row in data.iterrows()
-        if row["annotator"] == prolific_id
+        if row["prolific_id"] == prolific_id
     }
 
     candidates = [c for c in candidates if c.get("id") not in user_annotated_ids]
