@@ -27,7 +27,7 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
-ANNOTATIONS_PER_ITEM = 5
+ANNOTATIONS_PER_ITEM = 3
 ANNOTATIONS_PER_PERSON = 50
 
 
