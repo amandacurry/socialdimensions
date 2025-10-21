@@ -27,7 +27,7 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
-ANNOTATIONS_PER_ITEM = 3
+ANNOTATIONS_PER_ITEM = 10
 ANNOTATIONS_PER_PERSON = 50
 
 
@@ -44,7 +44,7 @@ state = st.session_state
 import sqlite3
 import os
 
-DB_NAME = "annotations.db"
+DB_NAME = "annotations_pilot4.db"
 csv_file = "small_sample_annotations - small_sample_annotations.csv"   # <-- change to your actual CSV
 
 
@@ -61,7 +61,8 @@ def initialize_database(db_name=DB_NAME):
     if db_exists:
         print(f"✅ Database '{db_name}' already exists.")
         return  # nothing to do
-
+    
+        
     # Connect (this creates the file)
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -296,7 +297,7 @@ def annotate_response(dimensions, url):
 
     if st.session_state.is_submitting and st.session_state.candidates:
         with st.spinner("Saving your annotation..."):
-            candidate = st.session_state.candidates[0]
+            candidate = st.session_state.candidates[state.row_index]
 
             # Build row in the correct order
             row_values = [
@@ -337,7 +338,7 @@ def annotate_response(dimensions, url):
 
             # Move to the next candidate
             st.session_state.row_index += 1
-            st.session_state.candidates.pop(0)
+            #st.session_state.candidates.pop(0)
 
     st.session_state.is_submitting = False
     
@@ -352,7 +353,7 @@ if 'PROLIFIC_PID' not in state:
         state.username = url_params['PROLIFIC_PID']
         state.session_id = url_params['SESSION_ID']
     else:
-        state.username = 'amanda'
+        state.username = 'test'
         state.session_id ='test'
     state.prev_annotations = get_user_annotation_count(state.username)
     state.PROLIFIC_PID = True
@@ -737,7 +738,7 @@ if state.INSTRUCTIONS_READ:
             st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
             st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
             
-            text = state.candidates[0]['text'].replace("\n", "<br>")
+            text = state.candidates[state.row_index]['text'].replace("\n", "<br>")
 
             st.markdown(
                 f"""
@@ -800,11 +801,37 @@ if state.INSTRUCTIONS_READ:
 
 
     
-    elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
+    elif state.form_filled and (state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON or not state.candidates):
         # update number of valid annotations
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        print(state.candidates[0]["new_id"])
+        ids = [str(row["new_id"]) for row in state.candidates]
+
+        print(ids)
+
+
+         # build placeholders
+        placeholders = ','.join('?' for _ in ids)   # '?, ?, ?' etc
+
+        # run update (use COALESCE if valie_annotations may be NULL)
+        update_sql = f"""
+            UPDATE stimuli
+            SET valid_annotations = COALESCE(valid_annotations, 0) + 1
+            WHERE new_id IN ({placeholders});
+        """
+        cursor.execute(update_sql, ids)
+        conn.commit()
+
+        # verify by selecting those rows back
+        stimuli = pd.read_sql(f"SELECT * FROM stimuli", conn)
+        print(stimuli[stimuli['valid_annotations']>0])
+
+        conn.close()
+
 
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **CBN3YT5G**")
+        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
 
  
 
