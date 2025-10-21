@@ -27,7 +27,7 @@ st.header("Social Dimensions Annotation Task")
 st.markdown("****")
 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)    
 
-ANNOTATIONS_PER_ITEM = 3
+ANNOTATIONS_PER_ITEM = 10
 ANNOTATIONS_PER_PERSON = 50
 
 
@@ -44,7 +44,7 @@ state = st.session_state
 import sqlite3
 import os
 
-DB_NAME = "annotations.db"
+DB_NAME = "annotations_pilot4.db"
 csv_file = "small_sample_annotations - small_sample_annotations.csv"   # <-- change to your actual CSV
 
 
@@ -61,7 +61,8 @@ def initialize_database(db_name=DB_NAME):
     if db_exists:
         print(f"✅ Database '{db_name}' already exists.")
         return  # nothing to do
-
+    
+        
     # Connect (this creates the file)
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -89,6 +90,15 @@ def initialize_database(db_name=DB_NAME):
         print(f"✅ Loaded CSV '{csv_file}' into 'stimuli' table.")
     else:
         print(f"⚠️ CSV file '{csv_file}' not found — 'stimuli' table is empty.")
+
+    try:
+        cursor.execute("ALTER TABLE stimuli ADD COLUMN valid_annotations INTEGER DEFAULT 0;")
+        conn.commit()
+        print("✅ Added column 'valid_annotation_count' to stimuli.")
+    except sqlite3.OperationalError:
+        # Column already exists
+        print('something is wrong')
+        pass
 
     # Create table: demographics
     cursor.execute("""
@@ -188,7 +198,7 @@ def get_items(prolific_id):
     print("GETTING ITEMS")
     data = load_annotated_data() #annotation_sheet.get_all_records()
     
-    user_count = get_user_annotation_count(prolific_id)
+    user_count = get_user_annotation_count(prolific_id)#
     print(user_count)
     #st.write(f"User annotations so far: {user_count}")
 
@@ -196,21 +206,25 @@ def get_items(prolific_id):
         return []  # User reached max annotations
 
     source_records = load_source_data()
+    print(source_records.columns)
     #print(source_records)
 
     # Count how many annotations each item has
-    item_annotation_counts = defaultdict(int)
-    for _, row in data.iterrows():  # iterate row by row
-        item_id = row["candidate_id"]         # access the 'id' column
-        item_annotation_counts[item_id] += 1
+    #item_annotation_counts = defaultdict(int)
+    #for _, row in data.iterrows():  # iterate row by row
+    #    item_id = row["candidate_id"]         # access the 'id' column
+    #    item_annotation_counts[item_id] += 1
+    
+    # stimuli['valid_annotations']
+    candidates = source_records[source_records['valid_annotations']<ANNOTATIONS_PER_ITEM]
 
     #print(row for row in source_records)
     # Filter items that still need annotations
     #candidates = [row for row in source_records if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM]
-    candidates = [
-        row for _, row in source_records.iterrows()
-        if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM
-    ]
+    #candidates = [
+    #    row for _, row in source_records.iterrows()
+    #    if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM
+    #]
     print('candidates', len(candidates))
     #print(candidates)
 
@@ -222,7 +236,8 @@ def get_items(prolific_id):
         if row["prolific_id"] == prolific_id
     }
 
-    candidates = [c for c in candidates if c.get("id") not in user_annotated_ids]
+    print(candidates)
+    candidates = [c for _, c in candidates.iterrows() if c["id"] not in user_annotated_ids]
     print(len(candidates))
 
     if not candidates:
@@ -282,7 +297,7 @@ def annotate_response(dimensions, url):
 
     if st.session_state.is_submitting and st.session_state.candidates:
         with st.spinner("Saving your annotation..."):
-            candidate = st.session_state.candidates[0]
+            candidate = st.session_state.candidates[state.row_index]
 
             # Build row in the correct order
             row_values = [
@@ -323,7 +338,7 @@ def annotate_response(dimensions, url):
 
             # Move to the next candidate
             st.session_state.row_index += 1
-            st.session_state.candidates.pop(0)
+            #st.session_state.candidates.pop(0)
 
     st.session_state.is_submitting = False
     
@@ -338,7 +353,7 @@ if 'PROLIFIC_PID' not in state:
         state.username = url_params['PROLIFIC_PID']
         state.session_id = url_params['SESSION_ID']
     else:
-        state.username = 'amanda'
+        state.username = 'test'
         state.session_id ='test'
     state.prev_annotations = get_user_annotation_count(state.username)
     state.PROLIFIC_PID = True
@@ -786,9 +801,37 @@ if state.INSTRUCTIONS_READ:
 
 
     
-    elif state.form_filled and state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON:
+    elif state.form_filled and (state.row_index+state.prev_annotations>=ANNOTATIONS_PER_PERSON or not state.candidates):
+        # update number of valid annotations
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        print(state.candidates[0]["new_id"])
+        ids = [str(row["new_id"]) for row in state.candidates]
+
+        print(ids)
+
+
+         # build placeholders
+        placeholders = ','.join('?' for _ in ids)   # '?, ?, ?' etc
+
+        # run update (use COALESCE if valie_annotations may be NULL)
+        update_sql = f"""
+            UPDATE stimuli
+            SET valid_annotations = COALESCE(valid_annotations, 0) + 1
+            WHERE new_id IN ({placeholders});
+        """
+        cursor.execute(update_sql, ids)
+        conn.commit()
+
+        # verify by selecting those rows back
+        stimuli = pd.read_sql(f"SELECT * FROM stimuli", conn)
+        print(stimuli[stimuli['valid_annotations']>0])
+
+        conn.close()
+
+
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **CBN3YT5G**")
+        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
 
  
 
