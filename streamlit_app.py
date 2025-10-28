@@ -44,7 +44,7 @@ state = st.session_state
 import sqlite3
 import os
 
-DB_NAME = "annotations_pilot4.db"
+DB_NAME = "annotations_pilot5.db"
 csv_file = "small_sample_annotations - small_sample_annotations.csv"   # <-- change to your actual CSV
 
 
