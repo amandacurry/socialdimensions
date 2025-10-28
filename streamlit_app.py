@@ -31,7 +31,7 @@ ANNOTATIONS_PER_ITEM = 10
 ANNOTATIONS_PER_PERSON = 50
 
 
-DB_NAME = "annotations.db"
+#DB_NAME = "annotations.db"
 DATA_TABLE = 'stimuli'
 ANNOTATIONS_TABLE = 'annotations'
 DEMOGRAPHICS_TABLE = 'demographics'
@@ -245,11 +245,15 @@ def get_items(prolific_id):
 
     # Shuffle for randomness
     random.shuffle(candidates)
+    
+
 
     # Limit to remaining quota
     remaining_quota = ANNOTATIONS_PER_PERSON - user_count
     next_items = candidates[:remaining_quota]
-
+    if len(next_items) >=2:
+        next_items.extend([next_items[0].copy(), next_items[1].copy(), next_items[3].copy()])
+    print(len(next_items))
     return next_items
 
 
@@ -346,22 +350,22 @@ if "username" not in state:
     state.username = ""
     state.session_id = ""
 
-#state.username = st.text_input("Enter your state.username:")
-if 'PROLIFIC_PID' not in state:
+if "initialised" not in state:
+    print('HELLO WHY ARE WE HERE THOUGH')
     if st.query_params.to_dict():
         url_params = st.query_params.to_dict()
         state.username = url_params['PROLIFIC_PID']
         state.session_id = url_params['SESSION_ID']
     else:
-        state.username = 'test'
+        state.username = 'test6'
         state.session_id ='test'
     state.prev_annotations = get_user_annotation_count(state.username)
-    state.PROLIFIC_PID = True
+    state.valid_anns = False
+    state.initialised = True
 
 # Initialize state
 if "is_submitting" not in st.session_state:
     st.session_state.is_submitting = False
-
 
 if 'INSTRUCTIONS_READ' not in state:
     state.INSTRUCTIONS_READ = False
@@ -732,12 +736,12 @@ if state.INSTRUCTIONS_READ:
 
 
 
-    if state.form_filled and state.row_index+state.prev_annotations<ANNOTATIONS_PER_PERSON:
+    if state.form_filled and state.row_index+state.prev_annotations<ANNOTATIONS_PER_PERSON+2:
         #st.write('index', state.row_index)
         with st.form("annotation_form"):
-            st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON}")
+            st.subheader(f"Utterance {1+state.row_index+state.prev_annotations} of {ANNOTATIONS_PER_PERSON+2}")
             st.write("Please read the following utterance and select the dimensions that you think are present in the text. If you think none of the dimensions apply, please select 'None of the above'. Select all that apply.")
-            
+            print(len(state.candidates))
             text = state.candidates[state.row_index]['text'].replace("\n", "<br>")
 
             st.markdown(
@@ -805,23 +809,26 @@ if state.INSTRUCTIONS_READ:
         # update number of valid annotations
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-        print(state.candidates[0]["new_id"])
         ids = [str(row["new_id"]) for row in state.candidates]
 
-        print(ids)
 
 
          # build placeholders
         placeholders = ','.join('?' for _ in ids)   # '?, ?, ?' etc
+        print(state.valid_anns)
 
-        # run update (use COALESCE if valie_annotations may be NULL)
-        update_sql = f"""
-            UPDATE stimuli
-            SET valid_annotations = COALESCE(valid_annotations, 0) + 1
-            WHERE new_id IN ({placeholders});
-        """
-        cursor.execute(update_sql, ids)
-        conn.commit()
+        if not state.valid_anns:
+            # run update (use COALESCE if valie_annotations may be NULL)
+            update_sql = f"""
+                UPDATE stimuli
+                SET valid_annotations = COALESCE(valid_annotations, 0) + 1
+                WHERE new_id IN ({placeholders});
+            """
+            cursor.execute(update_sql, ids)
+            conn.commit()
+            state.valid_anns = True
+            print(state.valid_anns)
+
 
         # verify by selecting those rows back
         stimuli = pd.read_sql(f"SELECT * FROM stimuli", conn)
@@ -831,7 +838,7 @@ if state.INSTRUCTIONS_READ:
 
 
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance. Thank you for participating! The completion code is: **C4HCA6L7**")
+        placeholder.write("This is the last utterance, do not reload the page. Thank you for participating! The completion code is: **C4HCA6L7**")
 
  
 
