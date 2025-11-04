@@ -838,7 +838,7 @@ if state.INSTRUCTIONS_READ:
 
 
         st.subheader("Thank you!")
-        placeholder.write("This is the last utterance, do not reload the page. Thank you for participating! The completion code is: **C4HCA6L7**")
+        placeholder.write("This is the last utterance, do not reload the page. Thank you for participating! The completion code is: **CBN3YT5G**")
 
  
 
