@@ -13,7 +13,6 @@ from streamlit_scroll_to_top import scroll_to_here
 import sqlite3
 import uuid  # or you could use integers if you prefer
 from collections import defaultdict
-import logger
 
 
 
