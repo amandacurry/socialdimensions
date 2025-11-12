@@ -13,6 +13,8 @@ from streamlit_scroll_to_top import scroll_to_here
 import sqlite3
 import uuid  # or you could use integers if you prefer
 from collections import defaultdict
+import logger
+
 
 
 
@@ -44,8 +46,8 @@ state = st.session_state
 import sqlite3
 import os
 
-DB_NAME = "annotations_pilot5.db"
-csv_file = "small_sample_annotations - small_sample_annotations.csv"   # <-- change to your actual CSV
+DB_NAME = "annotations_full_study.db"
+csv_file = "large_sample_annotations.csv"#"small_sample_annotations - small_sample_annotations.csv"  
 
 
 def initialize_database(db_name=DB_NAME):
@@ -194,42 +196,20 @@ def get_user_annotation_count(prolific_id):
 
 @st.cache_data
 def get_items(prolific_id):
-    #st.write('Fetching items for:', username)
     print("GETTING ITEMS")
     data = load_annotated_data() #annotation_sheet.get_all_records()
     
     user_count = get_user_annotation_count(prolific_id)#
     print(user_count)
-    #st.write(f"User annotations so far: {user_count}")
 
     if user_count >= ANNOTATIONS_PER_PERSON:
         return []  # User reached max annotations
 
     source_records = load_source_data()
     print(source_records.columns)
-    #print(source_records)
 
-    # Count how many annotations each item has
-    #item_annotation_counts = defaultdict(int)
-    #for _, row in data.iterrows():  # iterate row by row
-    #    item_id = row["candidate_id"]         # access the 'id' column
-    #    item_annotation_counts[item_id] += 1
-    
-    # stimuli['valid_annotations']
     candidates = source_records[source_records['valid_annotations']<ANNOTATIONS_PER_ITEM]
 
-    #print(row for row in source_records)
-    # Filter items that still need annotations
-    #candidates = [row for row in source_records if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM]
-    #candidates = [
-    #    row for _, row in source_records.iterrows()
-    #    if item_annotation_counts.get(row["new_id"], 0) < ANNOTATIONS_PER_ITEM
-    #]
-    print('candidates', len(candidates))
-    #print(candidates)
-
-    # Exclude items already annotated by this user
-    #user_annotated_ids = {r.get("id") for r in data if r.get("annotator") == prolific_id}
     user_annotated_ids = {
         row["candidate_id"]
         for _, row in data.iterrows()
@@ -440,7 +420,7 @@ if not state.INSTRUCTIONS_READ:
                 5. **Support**: Giving emotional or practical aid and companionship.
                 6. **Similarity**: Shared interests, motivations or outlooks.
                 7. **Identity**: Shared sense of belonging to the same community or group.
-                8. **Fun**: Experiencing leisure, laughter, and joy.
+                8. **Fun**: Experiencing leisure, laughter, and joy or trying to make someone laugh. 
                 9. **Conflict**: Contrast or diverging views.
                 10. **Romance**: Intimacy among people with a sentimental or sexual relationship.
                     
@@ -569,7 +549,7 @@ if not state.INSTRUCTIONS_READ:
             ---
 
             ## 8. Fun  
-            **Definition:** Experiencing leisure, laughter, and joy.  
+            **Definition:** Comedy. Experiencing leisure, laughter, and joy or trying to make someone else laugh. It is *not* comments **about** comedy.  
 
             **Indicators:**  
             - Jokes, humor, or playful teasing.  
@@ -769,7 +749,7 @@ if state.INSTRUCTIONS_READ:
             st.write("Which of the following social dimensions apply to this text?")
             
             state.run = state.row_index  # keep for unique keys
-            fun = st.checkbox('**Fun**: Experiencing leisure, laughter, and joy', key=f'fun_{state.run}')
+            fun = st.checkbox('**Fun**: Comedic comments, laughing or trying to make others laugh.', key=f'fun_{state.run}')
             romance = st.checkbox('**Romance**: Intimacy among people with a sentimental or sexual relationship, flirting. It does not include general discussion around sex and sexuality.', key=f'rom_{state.run}')  
             trust = st.checkbox('**Trust**: Will of relying on the actions or judgments of another', key=f'trust_{state.run}')  
             support = st.checkbox('**Support**: Giving emotional or practical aid and companionship', key=f'supp_{state.run}')  
